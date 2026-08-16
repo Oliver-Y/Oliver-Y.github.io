@@ -1,0 +1,168 @@
+<title>Materials against aluminium</title>
+<style>
+  :root{ --pg:#1C1B19; --pg-ink:#E8E4DC; --pg-mut:#8D877C; --pg-line:#2E2C28; }
+  @media (prefers-color-scheme: light){
+    :root{ --pg:#E8E6E1; --pg-ink:#1C1B19; --pg-mut:#67625A; --pg-line:#D2CFC8; }
+  }
+  :root[data-theme="light"]{ --pg:#E8E6E1; --pg-ink:#1C1B19; --pg-mut:#67625A; --pg-line:#D2CFC8; }
+  :root[data-theme="dark"]{ --pg:#1C1B19; --pg-ink:#E8E4DC; --pg-mut:#8D877C; --pg-line:#2E2C28; }
+
+  *{box-sizing:border-box;}
+  body{ background:var(--pg); color:var(--pg-ink); margin:0; padding:40px 24px 80px;
+        font-family:"Avenir Next",Avenir,"Gill Sans",Optima,-apple-system,sans-serif; }
+  .mono{ font-family:ui-monospace,"SF Mono",Menlo,monospace; }
+  .wrap{ max-width:1120px; margin:0 auto; }
+  h1{ font-size:19px; font-weight:400; letter-spacing:.02em; margin:0 0 6px; }
+  .sub{ color:var(--pg-mut); font-size:14px; margin:0 0 30px; max-width:68ch; line-height:1.6; }
+  .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  @media (max-width:900px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .grid{ grid-template-columns:1fr; } }
+
+  .tile{ border:1px solid var(--pg-line); border-radius:3px; overflow:hidden; }
+  .stage{ background:var(--g); padding:14px; min-height:236px; }
+  .bar{ background:linear-gradient(var(--phi),var(--plo)); border:1px solid var(--ln);
+        border-top-color:var(--edge); border-radius:2px;
+        padding:9px 10px; display:flex; align-items:center; gap:8px; }
+  .lamp{ width:6px; height:6px; border-radius:50%; background:var(--am);
+         box-shadow:0 0 7px 1px var(--am); flex:none; }
+  .nm{ font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--pik); }
+  .vr{ font-size:7.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--pmu); margin-left:auto; }
+  .body{ padding:15px 3px 4px; }
+  .body .l1{ color:var(--ik); font-size:13px; line-height:1.42; margin:0 0 8px; }
+  .body .l2{ color:var(--mu); font-size:11px; line-height:1.5; margin:0 0 10px; }
+  .body .lk{ color:var(--at); font-size:11px; border-bottom:1px solid var(--tr); display:inline-block; }
+  .rule{ height:1px; background:var(--ln2); margin:12px 0 9px; }
+  .row{ display:flex; justify-content:space-between; gap:8px; }
+  .row .t{ color:var(--ik); font-size:11px; }
+  .row .d{ color:var(--mu); font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
+
+  .chips{ display:flex; }
+  .chips i{ height:15px; flex:1; display:block; }
+  .cap{ padding:10px 11px; border-top:1px solid var(--pg-line); }
+  .cap b{ font-weight:400; font-size:12.5px; letter-spacing:.07em; text-transform:uppercase; display:block; }
+  .cap span{ font-size:11.5px; color:var(--pg-mut); line-height:1.45; display:block; margin-top:3px; }
+
+  /* ---------- 1. ABS: warm off-white plastic housing (Braun / early Sony) ---------- */
+  .abs{ --g:#DCD8CE; --phi:#E9EBEA; --plo:#D6D9D8; --edge:#F3F5F4; --ln:#B2B5B4;
+        --ik:#1E1C17; --mu:#5E5849; --pik:#1E1C17; --pmu:#6A6E6D; --ln2:#C4C0B4;
+        --tr:#BDB9AD; --am:#E3AE3C; --at:#6F5108; }
+  /* ---------- 2. SMOKED ACRYLIC: dust-cover amber-brown, lamp glows through ---------- */
+  .acr{ --g:#2A231A; --phi:#33363A; --plo:#25282B; --edge:#484C50; --ln:#3E4246;
+        --ik:#F0E6D4; --mu:#A0917A; --pik:#EDE9E2; --pmu:#8E9295; --ln2:#3A3128;
+        --tr:#4A3F30; --am:#FFC24E; --at:#FFCE73; }
+  /* ---------- 3. GRILLE CLOTH: woven speaker textile, warm grey-beige ---------- */
+  .clo{ --g:#C6C0B2; --phi:#E5E7E6; --plo:#D2D5D4; --edge:#F0F2F1; --ln:#AEB1B0;
+        --ik:#1D1B15; --mu:#585244; --pik:#1D1B15; --pmu:#676B6A; --ln2:#B0AA9B;
+        --tr:#ACA697; --am:#E0A733; --at:#6B4A06; }
+  /* ---------- 4. CHARCOAL ANODISE: dark metal on dark metal, no second material ---------- */
+  .ano{ --g:#1E2022; --phi:#2E3134; --plo:#232629; --edge:#43474A; --ln:#393D40;
+        --ik:#E7E8E9; --mu:#8E9295; --pik:#E7E8E9; --pmu:#8E9295; --ln2:#2E3134;
+        --tr:#3A3E41; --am:#FFC94E; --at:#FFD173; }
+  /* ---------- 5. PAPER: card stock under a metal faceplate ---------- */
+  .pap{ --g:#E3DFD4; --phi:#E7E9E8; --plo:#D4D7D6; --edge:#F2F4F3; --ln:#B0B3B2;
+        --ik:#1C1A15; --mu:#5C5749; --pik:#1C1A15; --pmu:#686C6B; --ln2:#CBC6B8;
+        --tr:#C4BFB1; --am:#DFA92F; --at:#6D4F07; }
+  /* ---------- 6. CHAMPAGNE: warm gold-toned anodised aluminium, single material ---------- */
+  .cha{ --g:#CFC6B4; --phi:#E4DCC8; --plo:#D3CAB4; --edge:#F0EAD9; --ln:#B4AB95;
+        --ik:#1F1C14; --mu:#5D5645; --pik:#1F1C14; --pmu:#6B6552; --ln2:#B9B09A;
+        --tr:#B5AC96; --am:#D89A21; --at:#6A4805; }
+</style>
+
+<div class="wrap">
+  <h1>What else pairs with the aluminium</h1>
+  <p class="sub">Same layout, same amber lamp, same <span class="mono">ver 001</span>. Only the material behind the faceplate changes. The faceplate itself stays brushed aluminium in all six — that's the constant you already liked.</p>
+
+  <div class="grid">
+
+    <div class="tile">
+      <div class="stage abs">
+        <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+        <div class="body">
+          <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+          <p class="l2">Most of the work is the unglamorous middle layer.</p>
+          <span class="lk">Gadgets &amp; Gizmos</span>
+          <div class="rule"></div>
+          <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+        </div>
+      </div>
+      <div class="chips abs"><i style="background:var(--g)"></i><i style="background:var(--phi)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+      <div class="cap"><b>ABS Plastic</b><span>Warm off-white housing — Braun, early Sony. The closest to "no material story," reads clean and quiet.</span></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage acr">
+        <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+        <div class="body">
+          <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+          <p class="l2">Most of the work is the unglamorous middle layer.</p>
+          <span class="lk">Gadgets &amp; Gizmos</span>
+          <div class="rule"></div>
+          <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+        </div>
+      </div>
+      <div class="chips acr"><i style="background:var(--g)"></i><i style="background:var(--phi)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+      <div class="cap"><b>Smoked Acrylic</b><span>The amber dust cover on a cassette deck. Dark, warm-brown, and the lamp genuinely glows against it.</span></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage clo">
+        <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+        <div class="body">
+          <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+          <p class="l2">Most of the work is the unglamorous middle layer.</p>
+          <span class="lk">Gadgets &amp; Gizmos</span>
+          <div class="rule"></div>
+          <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+        </div>
+      </div>
+      <div class="chips clo"><i style="background:var(--g)"></i><i style="background:var(--phi)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+      <div class="cap"><b>Grille Cloth</b><span>Speaker textile — warm grey-beige, no red in it. Wood's warmth without wood's brown.</span></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage ano">
+        <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+        <div class="body">
+          <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+          <p class="l2">Most of the work is the unglamorous middle layer.</p>
+          <span class="lk">Gadgets &amp; Gizmos</span>
+          <div class="rule"></div>
+          <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+        </div>
+      </div>
+      <div class="chips ano"><i style="background:var(--g)"></i><i style="background:var(--phi)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+      <div class="cap"><b>Charcoal Anodise</b><span>Metal on metal, no second material. Most instrument-like, least warm — the lamp does all the warming.</span></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage pap">
+        <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+        <div class="body">
+          <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+          <p class="l2">Most of the work is the unglamorous middle layer.</p>
+          <span class="lk">Gadgets &amp; Gizmos</span>
+          <div class="rule"></div>
+          <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+        </div>
+      </div>
+      <div class="chips pap"><i style="background:var(--g)"></i><i style="background:var(--phi)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+      <div class="cap"><b>Card Stock</b><span>Metal faceplate sitting on paper. Leans editorial — best of the six for long reading.</span></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage cha">
+        <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+        <div class="body">
+          <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+          <p class="l2">Most of the work is the unglamorous middle layer.</p>
+          <span class="lk">Gadgets &amp; Gizmos</span>
+          <div class="rule"></div>
+          <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+        </div>
+      </div>
+      <div class="chips cha"><i style="background:var(--g)"></i><i style="background:var(--phi)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+      <div class="cap"><b>Champagne Anodise</b><span>Warm gold-toned metal throughout. One material, warm by itself — no wood needed.</span></div>
+    </div>
+
+  </div>
+</div>

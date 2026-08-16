@@ -1,0 +1,159 @@
+<title>Oliver Ye — te</title>
+<style>
+  /* TE forward: aluminium chassis, tight grid, dense labelling, one hot accent.
+     Light default, dimmed to anodised-metal rather than paper. */
+  :root{
+    --ground:#CFCFCB; --panel:#D9D9D4; --ink:#141413; --muted:#5C5C57;
+    --line:#B4B4AE; --hot:#D2620E; --hot-txt:#8F3D05; --lamp:#E8901F;
+  }
+  :root.dark{
+    --ground:#171716; --panel:#1F1F1E; --ink:#E9E8E4; --muted:#8E8D87;
+    --line:#2E2E2C; --hot:#F2903B; --hot-txt:#F2903B; --lamp:#F2A93B;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not(.light){ --ground:#171716; --panel:#1F1F1E; --ink:#E9E8E4; --muted:#8E8D87;
+      --line:#2E2E2C; --hot:#F2903B; --hot-txt:#F2903B; --lamp:#F2A93B; }
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--ground); color:var(--ink); margin:0; padding:0 26px 90px;
+    font-family:"Helvetica Neue",Helvetica,Inter,Arial,sans-serif;
+    font-weight:300; font-size:15.5px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s linear,color .2s linear;
+  }
+  .wrap{ max-width:680px; margin:0 auto; }
+  .mono{ font-family:ui-monospace,"SF Mono",Menlo,monospace; }
+  .lbl{ font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+
+  .bar{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+        padding:16px 0 11px; border-bottom:2px solid var(--ink); }
+  .ident{ display:flex; align-items:center; gap:9px; }
+  .lampdot{ width:6px; height:6px; border-radius:50%; background:var(--lamp); box-shadow:0 0 6px var(--lamp); }
+  .ident .who a{ color:var(--ink); text-decoration:none; font-size:14.5px; letter-spacing:.09em; text-transform:lowercase; }
+  nav{ display:flex; gap:1px; }
+  nav a{ font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--muted);
+         text-decoration:none; padding:4px 9px; }
+  nav a:hover{ color:var(--ink); }
+  nav a.on{ background:var(--hot); color:#fff; }
+
+  /* spec strip — the thing under a faceplate that lists the model */
+  .spec{ display:flex; gap:26px; padding:9px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .spec span{ font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  .spec b{ color:var(--ink); font-weight:400; }
+
+  .hero{ display:grid; grid-template-columns:140px 1fr; gap:26px; padding:40px 0 10px; }
+  .photo{ width:140px; height:172px; background:var(--panel); border:1px solid var(--line);
+          display:flex; align-items:center; justify-content:center; font-size:9px;
+          letter-spacing:.2em; color:var(--muted); }
+  .cap{ display:flex; justify-content:space-between; margin-top:6px; font-size:9px;
+        letter-spacing:.14em; color:var(--muted); }
+  .lede{ font-size:20px; font-weight:300; line-height:1.4; margin:0 0 15px; letter-spacing:-.01em; }
+  p{ color:var(--muted); margin:0 0 13px; font-size:15px; }
+  a.inline{ color:var(--hot-txt); text-decoration:none; box-shadow:inset 0 -1px 0 var(--line); }
+  a.inline:hover{ box-shadow:inset 0 -2px 0 var(--hot); }
+  .rail{ display:flex; gap:1px; margin-top:20px; }
+  .rail a{ font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--muted);
+           text-decoration:none; border:1px solid var(--line); padding:5px 10px; }
+  .rail a:hover{ border-color:var(--hot); color:var(--hot-txt); }
+
+  .sheet{ display:none; padding-top:34px; }
+  .sheet.on{ display:block; }
+  .sheet h2{ display:flex; justify-content:space-between; align-items:baseline; margin:0 0 0;
+             font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted);
+             font-weight:400; padding-bottom:8px; border-bottom:2px solid var(--ink); }
+  .row{ display:grid; grid-template-columns:30px 1fr 64px; gap:12px; align-items:baseline;
+        padding:12px 0; border-bottom:1px solid var(--line); }
+  .row .n{ font-size:9.5px; color:var(--hot-txt); letter-spacing:.08em; }
+  .row .d{ font-size:9.5px; color:var(--muted); letter-spacing:.08em; text-align:right; }
+  .row .t{ font-size:15.5px; }
+  .row .t a{ color:var(--ink); text-decoration:none; }
+  .row .t a:hover{ color:var(--hot-txt); }
+  .row .s{ display:block; color:var(--muted); font-size:13.5px; margin-top:1px; }
+
+  footer{ margin-top:50px; padding-top:12px; border-top:1px solid var(--line);
+          display:flex; justify-content:space-between; font-size:9.5px; letter-spacing:.16em;
+          text-transform:uppercase; color:var(--muted); }
+  a:focus-visible{ outline:2px solid var(--hot); outline-offset:2px; }
+  .m{ position:fixed; right:14px; bottom:14px; background:var(--panel); color:var(--muted);
+      border:1px solid var(--line); padding:8px 11px; cursor:pointer;
+      font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; }
+  @media (max-width:600px){ .hero{ grid-template-columns:1fr; } }
+</style>
+
+<div class="wrap">
+  <div class="bar">
+    <div class="ident">
+      <span class="lampdot"></span>
+      <span class="who"><a href="#" data-go="home">oliver ye</a></span>
+    </div>
+    <nav>
+      <a href="#" class="on" data-go="home">home</a>
+      <a href="#" data-go="gg">gadgets</a>
+      <a href="#" data-go="kq">kitchen</a>
+      <a href="#" data-go="es">essays</a>
+    </nav>
+  </div>
+  <div class="spec mono">
+    <span>unit <b>OY-01</b></span>
+    <span>est <b>2026</b></span>
+    <span>loc <b>SF</b></span>
+    <span>status <b>writing</b></span>
+  </div>
+
+  <div class="sheet on" id="home">
+    <div class="hero">
+      <div>
+        <div class="photo mono">PHOTO</div>
+        <div class="cap mono"><span>FIG.01</span><span>OY</span></div>
+      </div>
+      <div>
+        <p class="lede">I build embedded software for sensor pipelines and hardware-in-the-loop rigs.</p>
+        <p>Most of the work is the unglamorous middle layer — getting cameras, clocks, and logs to agree with each other in real time. This site is where I write down what I figure out.</p>
+        <p><a class="inline" href="#" data-go="gg">Gadgets &amp; Gizmos</a> is bench notes. <a class="inline" href="#" data-go="kq">Kitchen &amp; Quotes</a> is cooking, books, and lines worth keeping. <a class="inline" href="#" data-go="es">Essays</a> is the slower thinking.</p>
+        <div class="rail mono"><a href="#">github</a><a href="#">email</a><a href="#">rss</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="gg">
+    <h2 class="mono"><span>Gadgets &amp; Gizmos</span><span>12 entries</span></h2>
+    <div class="row"><span class="n mono">01</span><span class="t"><a href="#">One D2D copy away from zero-copy</a><span class="s">NvSci camera pipeline holding at ~150&micro;s.</span></span><span class="d mono">2026.08</span></div>
+    <div class="row"><span class="n mono">02</span><span class="t"><a href="#">Why the logger dropped frames at 30 Hz</a><span class="s">A config default nobody remembered setting.</span></span><span class="d mono">2026.07</span></div>
+    <div class="row"><span class="n mono">03</span><span class="t"><a href="#">Reading Perfetto traces without going crazy</a></span><span class="d mono">2026.06</span></div>
+    <div class="row"><span class="n mono">04</span><span class="t"><a href="#">Clock domains, and why yours is lying</a></span><span class="d mono">2026.05</span></div>
+  </div>
+
+  <div class="sheet" id="kq">
+    <h2 class="mono"><span>Kitchen &amp; Quotes</span><span>28 entries</span></h2>
+    <div class="row"><span class="n mono">01</span><span class="t"><a href="#">Braised short rib, take six</a><span class="s">Sear it cold. That's the whole note.</span></span><span class="d mono">2026.08</span></div>
+    <div class="row"><span class="n mono">02</span><span class="t"><a href="#">Weeknight congee</a><span class="s">The ratio I've memorized.</span></span><span class="d mono">2026.07</span></div>
+    <div class="row"><span class="n mono">03</span><span class="t"><a href="#">The Overstory</a><span class="s">Reread. Still the best case for patience.</span></span><span class="d mono">2026.07</span></div>
+    <div class="row"><span class="n mono">04</span><span class="t"><a href="#">Perfect Days</a><span class="s">Twice in one week.</span></span><span class="d mono">2026.06</span></div>
+  </div>
+
+  <div class="sheet" id="es">
+    <h2 class="mono"><span>Essays</span><span>6 entries</span></h2>
+    <div class="row"><span class="n mono">01</span><span class="t"><a href="#">The quiet speeches land harder</a></span><span class="d mono">2026.07</span></div>
+    <div class="row"><span class="n mono">02</span><span class="t"><a href="#">On keeping notes you never reread</a></span><span class="d mono">2026.05</span></div>
+    <div class="row"><span class="n mono">03</span><span class="t"><a href="#">Everything I know about waiting</a></span><span class="d mono">2026.02</span></div>
+  </div>
+
+  <footer class="mono"><span>oliverye.dev</span><span>C — TE forward</span></footer>
+</div>
+
+<button class="m mono" id="mode">light / dark</button>
+<script>
+  const root=document.documentElement;
+  document.getElementById('mode').addEventListener('click',()=>{
+    const d=root.classList.contains('dark');
+    root.classList.toggle('dark',!d); root.classList.toggle('light',d);
+  });
+  document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault(); const id=el.dataset.go;
+    document.querySelectorAll('.sheet').forEach(s=>s.classList.toggle('on',s.id===id));
+    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.go===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }));
+</script>

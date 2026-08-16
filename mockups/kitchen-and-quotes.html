@@ -1,0 +1,103 @@
+<title>Kitchen &amp; Quotes — mockup</title>
+<style>
+  :root{
+    --ground:#EAE6DB; --ink:#2A2118; --muted:#7A6E5C; --card:#F5F2E9;
+    --quote:#B4791F; --recipe:#3C5A45; --book:#3E4A72;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ground:#211C15; --ink:#EFE9DB; --muted:#A79C87; --card:#2B241B;
+      --quote:#D9A44E; --recipe:#7CA588; --book:#8C97C7; }
+  }
+  :root[data-theme="dark"]{ --ground:#211C15; --ink:#EFE9DB; --muted:#A79C87; --card:#2B241B; --quote:#D9A44E; --recipe:#7CA588; --book:#8C97C7; }
+  :root[data-theme="light"]{ --ground:#EAE6DB; --ink:#2A2118; --muted:#7A6E5C; --card:#F5F2E9; --quote:#B4791F; --recipe:#3C5A45; --book:#3E4A72; }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family: Georgia, Charter, serif;
+    max-width:900px; margin:0 auto; padding:56px 24px 100px;
+  }
+  header{ margin-bottom:44px; }
+  .kicker{ font-family: ui-monospace, monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  h1{ font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight:700; font-size:40px; margin:8px 0 10px; text-wrap:balance; }
+  header p{ color:var(--muted); max-width:52ch; font-size:16px; margin:0 0 18px; }
+  nav{ display:flex; gap:6px; flex-wrap:wrap; }
+  nav a{
+    font-family: ui-monospace, monospace; font-size:12.5px; text-decoration:none; color:var(--ink);
+    border:1px solid var(--muted); padding:6px 12px; border-radius:999px;
+  }
+  nav a.current{ background:var(--ink); color:var(--ground); border-color:var(--ink); }
+
+  .grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; }
+  .card{ background:var(--card); border-radius:6px; padding:20px 20px 18px; display:flex; flex-direction:column; gap:10px; border-top:5px solid var(--accent, var(--muted)); }
+  .card.quote{ --accent:var(--quote); grid-column:span 3; }
+  .card.recipe{ --accent:var(--recipe); grid-column:span 2; }
+  .card.book{ --accent:var(--book); }
+  .card.recipe2{ --accent:var(--recipe); }
+  .card.book2{ --accent:var(--book); }
+  .card.speech{ --accent:var(--quote); grid-column:span 3;}
+
+  .label{ font-family: ui-monospace, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+  .card h2{ margin:0; font-family:Palatino,"Palatino Linotype","Book Antiqua",Georgia,serif; font-size:21px; font-weight:700; text-wrap:balance; }
+  .card p{ margin:0; color:var(--muted); font-size:15px; line-height:1.55; }
+  .quote p.big{ font-size:22px; color:var(--ink); font-style:italic; line-height:1.4; }
+  .quote .who{ font-family:ui-monospace,monospace; font-size:13px; color:var(--muted); }
+
+  a{ color:inherit; }
+  a:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
+  footer{ margin-top:50px; color:var(--muted); font-family:ui-monospace,monospace; font-size:12px; }
+</style>
+
+<header>
+  <div class="kicker">Oliver Ye</div>
+  <h1>Odds &amp; Ends</h1>
+  <p>The non-technical shelf: things I've cooked, read, watched, and lines I keep coming back to. (Bench notes on embedded systems live over at Gadgets &amp; Gizmos.)</p>
+  <nav>
+    <a href="#" class="current">all</a>
+    <a href="#">recipes</a>
+    <a href="#">books &amp; films</a>
+    <a href="#">quotes</a>
+    <a href="#">speeches</a>
+    <a href="#">gadgets &amp; gizmos ↗</a>
+    <a href="#">essays ↗</a>
+    <a href="#">about ↗</a>
+  </nav>
+</header>
+
+<div class="grid">
+  <div class="card quote">
+    <span class="label">Quote</span>
+    <p class="big">"The best time to plant a tree was twenty years ago. The second best time is now."</p>
+    <span class="who">— kept on the fridge since 2019</span>
+  </div>
+
+  <div class="card recipe">
+    <span class="label">Recipe</span>
+    <h2>Braised short rib, take six</h2>
+    <p>Sear cold, not room temp — the one change that finally rendered the fat right. Full method and the four failed attempts before it.</p>
+  </div>
+  <div class="card book">
+    <span class="label">Book</span>
+    <h2>The Overstory</h2>
+    <p>Reread this summer. Still the best case for patience I've read.</p>
+  </div>
+
+  <div class="card book2">
+    <span class="label">Film</span>
+    <h2>Perfect Days</h2>
+    <p>Watched twice in a week. Notes on Hirayama's routine and why it doesn't read as sad.</p>
+  </div>
+  <div class="card recipe2">
+    <span class="label">Recipe</span>
+    <h2>Weeknight congee, no recipe needed</h2>
+    <p>The ratio I've memorized and three things to throw in when tired.</p>
+  </div>
+
+  <div class="card speech">
+    <span class="label">Speech</span>
+    <h2>Rereading Klemperer</h2>
+    <p>Why the quiet speeches land harder than the rousing ones — notes after a third pass this year.</p>
+  </div>
+</div>
+
+<footer>odds-and-ends.oliverye.dev — mockup 2 of 3</footer>

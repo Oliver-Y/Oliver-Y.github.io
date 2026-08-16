@@ -1,0 +1,196 @@
+<title>Housing options</title>
+<style>
+  :root{
+    --pg:#1C1B19; --pg-ink:#E8E4DC; --pg-mut:#8D877C; --pg-line:#2E2C28;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --pg:#E8E6E1; --pg-ink:#1C1B19; --pg-mut:#67625A; --pg-line:#D2CFC8; }
+  }
+  :root[data-theme="light"]{ --pg:#E8E6E1; --pg-ink:#1C1B19; --pg-mut:#67625A; --pg-line:#D2CFC8; }
+  :root[data-theme="dark"]{ --pg:#1C1B19; --pg-ink:#E8E4DC; --pg-mut:#8D877C; --pg-line:#2E2C28; }
+
+  *{box-sizing:border-box;}
+  body{ background:var(--pg); color:var(--pg-ink); margin:0; padding:40px 24px 80px;
+        font-family:"Avenir Next",Avenir,"Gill Sans",Optima,-apple-system,sans-serif; }
+  .mono{ font-family:ui-monospace,"SF Mono",Menlo,monospace; }
+  .wrap{ max-width:1080px; margin:0 auto; }
+  h1{ font-size:19px; font-weight:400; letter-spacing:.02em; margin:0 0 6px; }
+  .sub{ color:var(--pg-mut); font-size:14px; margin:0 0 30px; max-width:60ch; }
+
+  .grp{ margin-bottom:34px; }
+  .grp > h2{ font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--pg-mut);
+             font-weight:400; margin:0 0 12px; padding-bottom:8px; border-bottom:1px solid var(--pg-line); }
+  .grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media (max-width:860px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .grid{ grid-template-columns:1fr; } }
+
+  /* ---- a tile renders the real design in miniature ---- */
+  .tile{ border:1px solid var(--pg-line); border-radius:3px; overflow:hidden; }
+  .stage{ background:var(--g); padding:12px; }
+  .bar{ background:var(--pn); border:1px solid var(--ln); border-radius:2px;
+        padding:8px 9px; display:flex; align-items:center; gap:7px; }
+  .lamp{ width:6px; height:6px; border-radius:50%; background:var(--am); box-shadow:0 0 7px 1px var(--am); flex:none; }
+  .nm{ font-size:8.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ik); }
+  .vr{ font-size:7.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--mu); margin-left:auto; }
+  .body{ padding:13px 3px 4px; }
+  .body .l1{ color:var(--ik); font-size:12.5px; line-height:1.4; margin:0 0 7px; }
+  .body .l2{ color:var(--mu); font-size:11px; line-height:1.5; margin:0 0 9px; }
+  .body .lk{ color:var(--at); font-size:11px; border-bottom:1px solid var(--tr); display:inline-block; }
+  .rule{ height:1px; background:var(--ln); margin:11px 0 8px; }
+  .row{ display:flex; justify-content:space-between; gap:8px; }
+  .row .t{ color:var(--ik); font-size:11px; }
+  .row .d{ color:var(--mu); font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
+
+  .chips{ display:flex; gap:0; }
+  .chips i{ height:16px; flex:1; display:block; }
+  .cap{ display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+        padding:9px 10px; border-top:1px solid var(--pg-line); }
+  .cap b{ font-weight:400; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+  .cap span{ font-size:9px; color:var(--pg-mut); letter-spacing:.06em; }
+
+  /* ===== light housings ===== */
+  .ash-l   { --g:#CBC4B3; --pn:#D2D2CE; --tr:#B7B7B2; --ik:#1F1C15; --mu:#5C5647; --ln:#AFAFA9; --am:#E3AE3C; --at:#6F5108; }
+  .cedar-l { --g:#C9B9A2; --pn:#CFCFCB; --tr:#B4B4AF; --ik:#211A12; --mu:#5F5241; --ln:#ACACA6; --am:#E0A733; --at:#6B4A06; }
+  .walnut-l{ --g:#BEAE98; --pn:#CACAC5; --tr:#AFAFA9; --ik:#1E1810; --mu:#584B3B; --ln:#A6A6A0; --am:#DDA330; --at:#644405; }
+  .slate-l { --g:#C5C5C0; --pn:#CFCFCB; --tr:#B5B5B0; --ik:#1A1A17; --mu:#585850; --ln:#ABABA5; --am:#DFAA3A; --at:#6C4E08; }
+  /* ===== dark housings ===== */
+  .ash-d   { --g:#17150F; --pn:#1F1C15; --tr:#2E2A20; --ik:#EFE7D6; --mu:#9A907C; --ln:#302C22; --am:#FFC94E; --at:#FFD173; }
+  .cedar-d { --g:#191309; --pn:#20201E; --tr:#312F2B; --ik:#F0E5D2; --mu:#9C8E76; --ln:#302E2A; --am:#FFC44A; --at:#FFCE6E; }
+  .walnut-d{ --g:#150F08; --pn:#1D1D1B; --tr:#2D2B27; --ik:#EEE2CD; --mu:#948671; --ln:#2C2A26; --am:#FFC145; --at:#FFCB6B; }
+  .slate-d { --g:#141513; --pn:#1C1D1A; --tr:#2A2C27; --ik:#E9E8E1; --mu:#8E8E84; --ln:#2B2C28; --am:#FFC94E; --at:#FFD173; }
+</style>
+
+<div class="wrap">
+  <h1>Housing options</h1>
+  <p class="sub">The same layout in four housing tones, light and dark. The page ground is the wood case; the faceplate behind the name is the cooler aluminium. Swatch strip under each tile shows ground / faceplate / hairline / lamp.</p>
+
+  <div class="grp">
+    <h2>Light</h2>
+    <div class="grid">
+      <div class="tile">
+        <div class="stage ash-l">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips ash-l"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Ash</b><span>palest, softest</span></div>
+      </div>
+
+      <div class="tile">
+        <div class="stage cedar-l">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips cedar-l"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Cedar</b><span>warm reddish veneer</span></div>
+      </div>
+
+      <div class="tile">
+        <div class="stage walnut-l">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips walnut-l"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Walnut</b><span>deepest, browner</span></div>
+      </div>
+
+      <div class="tile">
+        <div class="stage slate-l">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips slate-l"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Slate</b><span>all metal, no wood</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>Dark</h2>
+    <div class="grid">
+      <div class="tile">
+        <div class="stage ash-d">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips ash-d"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Ash</b><span>neutral warm charcoal</span></div>
+      </div>
+
+      <div class="tile">
+        <div class="stage cedar-d">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips cedar-d"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Cedar</b><span>warmest, brown-black</span></div>
+      </div>
+
+      <div class="tile">
+        <div class="stage walnut-d">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips walnut-d"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Walnut</b><span>darkest ground</span></div>
+      </div>
+
+      <div class="tile">
+        <div class="stage slate-d">
+          <div class="bar"><span class="lamp"></span><span class="nm mono">Oliver Ye</span><span class="vr mono">ver 001</span></div>
+          <div class="body">
+            <p class="l1">I'm Oliver. I build embedded software for sensor pipelines.</p>
+            <p class="l2">Most of the work is the unglamorous middle layer.</p>
+            <span class="lk">Gadgets &amp; Gizmos</span>
+            <div class="rule"></div>
+            <div class="row"><span class="t">Braised short rib, take six</span><span class="d mono">Aug</span></div>
+          </div>
+        </div>
+        <div class="chips slate-d"><i style="background:var(--g)"></i><i style="background:var(--pn)"></i><i style="background:var(--ln)"></i><i style="background:var(--am)"></i></div>
+        <div class="cap"><b>Slate</b><span>coolest, no warmth</span></div>
+      </div>
+    </div>
+  </div>
+</div>

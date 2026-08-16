@@ -1,0 +1,135 @@
+<title>Oliver Ye — mockup</title>
+<style>
+  /* ---- palettes ---------------------------------------------------- */
+  /* 1. slate  — neutral gray, cool  (default) */
+  :root, :root[data-p="slate"]{
+    --ground:#1C1E20; --ink:#E6E7E5; --muted:#8B8F91; --line:#2C2F31; --accent:#9AA7A5;
+  }
+  :root[data-p="slate"][data-theme="light"], :root[data-p="slate"].light{
+    --ground:#F1F1EF; --ink:#1C1E20; --muted:#6A6E70; --line:#DCDCD8; --accent:#4F6360;
+  }
+  /* 2. sage — the muted green you have now */
+  :root[data-p="sage"]{ --ground:#1B1D1C; --ink:#E7E5DE; --muted:#8D8F89; --line:#2C2E2B; --accent:#93A08D; }
+  :root[data-p="sage"].light{ --ground:#F0EFEA; --ink:#1B1D1B; --muted:#6B6D66; --line:#DBDAD3; --accent:#5C6B57; }
+  /* 3. ink — near-black paper, warm off-white, no hue */
+  :root[data-p="ink"]{ --ground:#141414; --ink:#EDEBE7; --muted:#8A8884; --line:#282726; --accent:#C9A227; }
+  :root[data-p="ink"].light{ --ground:#FBFAF7; --ink:#171614; --muted:#6E6C67; --line:#E2E0DA; --accent:#8A6D0B; }
+  /* 4. dusk — cool blue-gray with a soft periwinkle accent */
+  :root[data-p="dusk"]{ --ground:#181B21; --ink:#E4E6EB; --muted:#868B96; --line:#282C34; --accent:#8FA0C4; }
+  :root[data-p="dusk"].light{ --ground:#F2F3F6; --ink:#181B21; --muted:#666C78; --line:#DBDDE3; --accent:#495C86; }
+  /* 5. clay — warm gray ground, terracotta-free rust accent */
+  :root[data-p="clay"]{ --ground:#1E1B19; --ink:#EAE6E1; --muted:#8F8880; --line:#2E2A27; --accent:#B98A6B; }
+  :root[data-p="clay"].light{ --ground:#F3F0EC; --ink:#1E1B19; --muted:#6F6862; --line:#E0DAD3; --accent:#87563A; }
+
+  @media (prefers-color-scheme: light){
+    :root:not(.dark):not(.light){ --ground:#F1F1EF; --ink:#1C1E20; --muted:#6A6E70; --line:#DCDCD8; --accent:#4F6360; }
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:"Iowan Old Style", Charter, Georgia, serif;
+    margin:0; padding:0 24px 80px; font-size:17px; line-height:1.65;
+    transition:background .25s ease, color .25s ease;
+  }
+  .wrap{ max-width:620px; margin:0 auto; }
+
+  .topbar{
+    display:flex; align-items:baseline; justify-content:space-between; gap:24px;
+    padding:26px 0; border-bottom:1px solid var(--line); flex-wrap:wrap;
+  }
+  .topbar .name a{ color:var(--ink); text-decoration:none; font-size:17px; }
+  .topbar nav{ display:flex; gap:20px; font-family:ui-monospace, monospace; font-size:12.5px; }
+  .topbar nav a{ color:var(--muted); text-decoration:none; }
+  .topbar nav a:hover, .topbar nav a.current{ color:var(--accent); }
+
+  .hero{ display:flex; gap:28px; align-items:flex-start; padding:48px 0 8px; }
+  .photo{
+    flex:none; width:148px; height:186px; border:1px solid var(--line);
+    background:
+      repeating-linear-gradient(45deg, transparent 0 9px, var(--line) 9px 10px);
+    display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px;
+    font-family:ui-monospace,monospace; font-size:10.5px; color:var(--muted); letter-spacing:.08em;
+  }
+  .hero-text p{ margin:0 0 14px; color:var(--muted); font-size:16px; }
+  .hero-text p:first-child{ color:var(--ink); font-size:19px; }
+  .hero-text a{ color:var(--accent); }
+
+  .links{ display:flex; gap:18px; margin-top:22px; font-family:ui-monospace,monospace; font-size:12px; }
+  .links a{ color:var(--muted); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; }
+  .links a:hover{ color:var(--accent); border-color:var(--accent); }
+
+  footer{ margin-top:64px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-family:ui-monospace,monospace; font-size:12px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ---- mockup-only palette switcher -------------------------------- */
+  .switch{
+    position:fixed; right:16px; bottom:16px; display:flex; gap:6px; align-items:center;
+    background:var(--ground); border:1px solid var(--line); border-radius:999px; padding:7px 10px;
+    font-family:ui-monospace,monospace; font-size:10.5px; color:var(--muted);
+  }
+  .switch button{
+    width:19px; height:19px; border-radius:50%; border:1px solid var(--line); cursor:pointer; padding:0;
+  }
+  .switch button[aria-pressed="true"]{ outline:2px solid var(--accent); outline-offset:1px; }
+  .switch .lbl{ margin-right:2px; }
+  .switch .mode{ background:none; border:none; width:auto; color:var(--muted); cursor:pointer; font-family:inherit; font-size:10.5px; border-left:1px solid var(--line); padding-left:8px; margin-left:2px; border-radius:0; }
+  @media (max-width:560px){ .hero{ flex-direction:column; } }
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="name"><a href="#">Oliver Ye</a></div>
+    <nav>
+      <a href="#" class="current">home</a>
+      <a href="#">gadgets &amp; gizmos</a>
+      <a href="#">kitchen &amp; quotes</a>
+      <a href="#">essays</a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <div class="photo">YOUR PHOTO</div>
+    <div class="hero-text">
+      <p>Hi — I'm Oliver. I work on embedded software: sensor pipelines, hardware-in-the-loop rigs, and the timing bugs that live between them.</p>
+      <p>This site is where I write things down. <a href="#">Gadgets &amp; Gizmos</a> is bench notes and technical write-ups. <a href="#">Kitchen &amp; Quotes</a> is what I've cooked, read, and watched. <a href="#">Essays</a> is everything else — the slower, less resolved thinking.</p>
+      <div class="links">
+        <a href="#">github</a>
+        <a href="#">email</a>
+        <a href="#">rss</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>oliverye.dev</span>
+    <span>↓ try the palettes</span>
+  </footer>
+</div>
+
+<div class="switch">
+  <span class="lbl">theme</span>
+  <button data-set="slate" style="background:#4F6360" title="slate"></button>
+  <button data-set="sage"  style="background:#5C6B57" title="sage"></button>
+  <button data-set="ink"   style="background:#C9A227" title="ink"></button>
+  <button data-set="dusk"  style="background:#8FA0C4" title="dusk"></button>
+  <button data-set="clay"  style="background:#B98A6B" title="clay"></button>
+  <button class="mode" id="mode">light/dark</button>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const swatches = document.querySelectorAll('.switch button[data-set]');
+  function setPalette(p){
+    root.setAttribute('data-p', p);
+    swatches.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.set === p)));
+  }
+  swatches.forEach(b => b.addEventListener('click', () => setPalette(b.dataset.set)));
+  setPalette('slate');
+
+  document.getElementById('mode').addEventListener('click', () => {
+    const isLight = root.classList.contains('light');
+    root.classList.toggle('light', !isLight);
+    root.classList.toggle('dark', isLight);
+  });
+</script>

@@ -1,0 +1,6 @@
+{
+  "layout": "post.njk",
+  "tags": "gadgets",
+  "section": "gadgets",
+  "permalink": "/gadgets/{{ page.fileSlug }}/"
+}

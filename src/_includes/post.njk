@@ -1,0 +1,18 @@
+---
+layout: base.njk
+---
+<article class="post">
+  <div class="post-head">
+    <div class="meta mono">
+      {{ date | date }}{% if kind %} · {{ kind }}{% endif %}
+    </div>
+    <h1>{{ title }}</h1>
+    {% if blurb %}<p class="blurb">{{ blurb }}</p>{% endif %}
+  </div>
+
+  <div class="prose">
+    {{ content | safe }}
+  </div>
+
+  <a class="back mono" href="/{{ section }}/">← {{ section }}</a>
+</article>

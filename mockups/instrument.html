@@ -1,0 +1,243 @@
+<title>Oliver Ye — instrument</title>
+<style>
+  /* ============ palettes ============================================ */
+  /* A. ALUMINIUM — TE chassis gray, amber indicator (default) */
+  :root, :root[data-p="alu"]{
+    --ground:#1A1917; --panel:#211F1C; --ink:#E8E4DC; --muted:#948D82; --line:#312E29;
+    --amber:#F2A93B; --amber-txt:#F2A93B; --signal:#E2685A;
+  }
+  :root[data-p="alu"].light{
+    --ground:#E6E4DF; --panel:#EFEDE8; --ink:#1A1917; --muted:#67625A; --line:#CFCBC2;
+    --amber:#F2A93B; --amber-txt:#8A5200; --signal:#A83A2C;
+  }
+  /* B. TRINITRON — deep warm charcoal, hotter amber */
+  :root[data-p="tri"]{
+    --ground:#151312; --panel:#1D1A18; --ink:#EFE8DC; --muted:#8F877C; --line:#2C2724;
+    --amber:#FFB43D; --amber-txt:#FFB43D; --signal:#E0574A;
+  }
+  :root[data-p="tri"].light{
+    --ground:#EDEAE3; --panel:#F5F3ED; --ink:#151312; --muted:#645E56; --line:#D6D1C6;
+    --amber:#FFB43D; --amber-txt:#8C5000; --signal:#A5352A;
+  }
+  /* C. TOKYO — your terminal theme, amber-forward */
+  :root[data-p="tok"]{
+    --ground:#1A1B26; --panel:#20222F; --ink:#C0CAF5; --muted:#7C84A8; --line:#2C2F42;
+    --amber:#E0AF68; --amber-txt:#E0AF68; --signal:#7AA2F7;
+  }
+  :root[data-p="tok"].light{
+    --ground:#E6E7ED; --panel:#EEEFF3; --ink:#343B59; --muted:#666C86; --line:#CFD2DE;
+    --amber:#E0AF68; --amber-txt:#8A5A15; --signal:#006C86;
+  }
+  /* D. WALKMAN — warm gray + amber + a cool steel secondary */
+  :root[data-p="walk"]{
+    --ground:#18191A; --panel:#1F2123; --ink:#E6E3DD; --muted:#8D8C87; --line:#2E3033;
+    --amber:#F5AE3C; --amber-txt:#F5AE3C; --signal:#79A6C4;
+  }
+  :root[data-p="walk"].light{
+    --ground:#E4E5E4; --panel:#EDEEED; --ink:#18191A; --muted:#63645F; --line:#CBCDCC;
+    --amber:#F5AE3C; --amber-txt:#8A5400; --signal:#2E6284;
+  }
+
+  @media (prefers-color-scheme: light){
+    :root:not(.dark):not(.light){
+      --ground:#E6E4DF; --panel:#EFEDE8; --ink:#1A1917; --muted:#67625A; --line:#CFCBC2;
+      --amber:#F2A93B; --amber-txt:#8A5200; --signal:#A83A2C;
+    }
+  }
+
+  /* ============ base =============================================== */
+  *{box-sizing:border-box;}
+  body{
+    background:var(--ground); color:var(--ink); margin:0;
+    font-family:"Helvetica Neue", Helvetica, Inter, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-weight:300; font-size:16px; line-height:1.65;
+    padding:0 28px 90px;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s linear, color .2s linear;
+  }
+  .wrap{ max-width:660px; margin:0 auto; }
+  .mono{ font-family:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace; }
+
+  /* ---- top bar: the faceplate ---- */
+  .bar{
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:20px 0 14px; border-bottom:1px solid var(--line); flex-wrap:wrap;
+  }
+  .ident{ display:flex; align-items:center; gap:10px; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--amber); flex:none;
+        box-shadow:0 0 7px var(--amber); }
+  .ident .who{ font-size:15px; letter-spacing:.02em; }
+  .ident .who a{ color:var(--ink); text-decoration:none; }
+  .ident .unit{ font-size:10.5px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
+
+  nav{ display:flex; gap:2px; }
+  nav a{
+    font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; text-decoration:none;
+    color:var(--muted); padding:5px 10px; border:1px solid transparent; border-radius:2px;
+  }
+  nav a:hover{ color:var(--ink); }
+  nav a.on{ color:var(--ink); border-color:var(--line); background:var(--panel); }
+
+  /* ---- hero ---- */
+  .hero{ display:flex; gap:30px; padding:44px 0 10px; align-items:flex-start; }
+  .plate{ flex:none; width:150px; }
+  .photo{
+    width:150px; height:188px; border:1px solid var(--line); background:var(--panel);
+    display:flex; align-items:center; justify-content:center;
+    font-size:9.5px; letter-spacing:.18em; color:var(--muted);
+  }
+  .plate .cap{ display:flex; justify-content:space-between; margin-top:7px; font-size:9.5px; letter-spacing:.1em; color:var(--muted); }
+
+  .lede{ font-size:19px; font-weight:300; line-height:1.5; margin:0 0 16px; letter-spacing:-.005em; }
+  .body p{ color:var(--muted); margin:0 0 14px; font-size:15.5px; }
+  .body a{ color:var(--amber-txt); text-decoration:none; border-bottom:1px solid var(--line); }
+  .body a:hover{ border-color:var(--amber); }
+
+  .rail{ display:flex; gap:16px; margin-top:20px; font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; }
+  .rail a{ color:var(--muted); text-decoration:none; }
+  .rail a:hover{ color:var(--amber-txt); }
+
+  /* ---- section index (shown when a nav item is picked) ---- */
+  .sheet{ display:none; padding-top:38px; }
+  .sheet.on{ display:block; }
+  .sheet h2{
+    font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+    font-weight:400; margin:0 0 2px; display:flex; justify-content:space-between;
+    padding-bottom:9px; border-bottom:1px solid var(--line);
+  }
+  .row{ display:grid; grid-template-columns:26px 62px 1fr; gap:14px; align-items:baseline;
+        padding:13px 0; border-bottom:1px solid var(--line); }
+  .row .n, .row .d{ font-size:10.5px; color:var(--muted); letter-spacing:.06em; }
+  .row .t{ font-size:16px; }
+  .row .t a{ color:var(--ink); text-decoration:none; }
+  .row .t a:hover{ color:var(--amber-txt); }
+  .row .s{ color:var(--muted); font-size:14px; display:block; margin-top:2px; }
+
+  footer{ margin-top:54px; padding-top:14px; border-top:1px solid var(--line);
+          display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;
+          font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  a:focus-visible{ outline:2px solid var(--amber); outline-offset:2px; }
+
+  /* ---- mockup-only switcher ---- */
+  .sw{ position:fixed; right:14px; bottom:14px; display:flex; align-items:center; gap:6px;
+       background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:7px 9px;
+       font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .sw button{ width:17px; height:17px; border:1px solid var(--line); border-radius:1px; cursor:pointer; padding:0; }
+  .sw button[aria-pressed="true"]{ outline:2px solid var(--amber); outline-offset:1px; }
+  .sw .m{ background:none; border:none; width:auto; color:var(--muted); cursor:pointer;
+          font:inherit; letter-spacing:.12em; border-left:1px solid var(--line); padding-left:8px; }
+  @media (max-width:600px){ .hero{ flex-direction:column; } }
+</style>
+
+<div class="wrap">
+  <div class="bar">
+    <div class="ident">
+      <span class="dot"></span>
+      <span class="who"><a href="#" data-go="home">Oliver Ye</a></span>
+      <span class="unit mono">— ver 001</span>
+    </div>
+    <nav>
+      <a href="#" class="on" data-go="home">home</a>
+      <a href="#" data-go="gg">gadgets &amp; gizmos</a>
+      <a href="#" data-go="kq">kitchen &amp; quotes</a>
+      <a href="#" data-go="es">essays</a>
+    </nav>
+  </div>
+
+  <!-- HOME -->
+  <div class="sheet on" id="home">
+    <div class="hero">
+      <div class="plate">
+        <div class="photo mono">PHOTO</div>
+        <div class="cap mono"><span>FIG. 01</span><span>OY</span></div>
+      </div>
+      <div class="body">
+        <p class="lede">I'm Oliver — I build embedded software for sensor pipelines and hardware-in-the-loop rigs.</p>
+        <p>Most of my work is the unglamorous middle layer: getting cameras, clocks, and logs to agree with each other in real time. This site is where I write down what I figure out.</p>
+        <p><a href="#" data-go="gg">Gadgets &amp; Gizmos</a> is bench notes. <a href="#" data-go="kq">Kitchen &amp; Quotes</a> is cooking, books, and lines worth keeping. <a href="#" data-go="es">Essays</a> is the slower, less resolved thinking.</p>
+        <div class="rail mono">
+          <a href="#">github</a><a href="#">email</a><a href="#">rss</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GADGETS & GIZMOS -->
+  <div class="sheet" id="gg">
+    <h2 class="mono"><span>Gadgets &amp; Gizmos</span><span>12 entries</span></h2>
+    <div class="row"><span class="n mono">01</span><span class="d mono">2026.08</span>
+      <span class="t"><a href="#">One D2D copy away from zero-copy</a><span class="s">NvSci camera pipeline holding at ~150&micro;s.</span></span></div>
+    <div class="row"><span class="n mono">02</span><span class="d mono">2026.07</span>
+      <span class="t"><a href="#">Why the logger dropped frames at 30 Hz</a><span class="s">A config default nobody remembered setting.</span></span></div>
+    <div class="row"><span class="n mono">03</span><span class="d mono">2026.06</span>
+      <span class="t"><a href="#">Reading Perfetto traces without going crazy</a></span></div>
+    <div class="row"><span class="n mono">04</span><span class="d mono">2026.05</span>
+      <span class="t"><a href="#">Clock domains, and why yours is lying</a></span></div>
+  </div>
+
+  <!-- KITCHEN & QUOTES -->
+  <div class="sheet" id="kq">
+    <h2 class="mono"><span>Kitchen &amp; Quotes</span><span>28 entries</span></h2>
+    <div class="row"><span class="n mono">01</span><span class="d mono">2026.08</span>
+      <span class="t"><a href="#">Braised short rib, take six</a><span class="s">Sear it cold. That's the whole note.</span></span></div>
+    <div class="row"><span class="n mono">02</span><span class="d mono">2026.07</span>
+      <span class="t"><a href="#">Weeknight congee</a><span class="s">The ratio I've memorized.</span></span></div>
+    <div class="row"><span class="n mono">03</span><span class="d mono">2026.07</span>
+      <span class="t"><a href="#">The Overstory</a><span class="s">Reread. Still the best case for patience.</span></span></div>
+    <div class="row"><span class="n mono">04</span><span class="d mono">2026.06</span>
+      <span class="t"><a href="#">Perfect Days</a><span class="s">Twice in one week.</span></span></div>
+  </div>
+
+  <!-- ESSAYS -->
+  <div class="sheet" id="es">
+    <h2 class="mono"><span>Essays</span><span>6 entries</span></h2>
+    <div class="row"><span class="n mono">01</span><span class="d mono">2026.07</span>
+      <span class="t"><a href="#">The quiet speeches land harder</a></span></div>
+    <div class="row"><span class="n mono">02</span><span class="d mono">2026.05</span>
+      <span class="t"><a href="#">On keeping notes you never reread</a></span></div>
+    <div class="row"><span class="n mono">03</span><span class="d mono">2026.02</span>
+      <span class="t"><a href="#">Everything I know about waiting</a></span></div>
+  </div>
+
+  <footer class="mono">
+    <span>oliverye.dev</span>
+    <span>palettes ↘</span>
+  </footer>
+</div>
+
+<div class="sw mono">
+  <span>theme</span>
+  <button data-set="alu"  style="background:#B9B5AC" title="aluminium"></button>
+  <button data-set="tri"  style="background:#FFB43D" title="trinitron"></button>
+  <button data-set="tok"  style="background:#7AA2F7" title="tokyo night"></button>
+  <button data-set="walk" style="background:#79A6C4" title="walkman"></button>
+  <button class="m" id="mode">light / dark</button>
+</div>
+
+<script>
+  const root = document.documentElement;
+
+  const sw = document.querySelectorAll('.sw button[data-set]');
+  function setPalette(p){
+    root.setAttribute('data-p', p);
+    sw.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.set === p)));
+  }
+  sw.forEach(b => b.addEventListener('click', () => setPalette(b.dataset.set)));
+  setPalette('alu');
+
+  document.getElementById('mode').addEventListener('click', () => {
+    const isLight = root.classList.contains('light');
+    root.classList.toggle('light', !isLight);
+    root.classList.toggle('dark', isLight);
+  });
+
+  document.querySelectorAll('[data-go]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      const id = el.dataset.go;
+      document.querySelectorAll('.sheet').forEach(s => s.classList.toggle('on', s.id === id));
+      document.querySelectorAll('nav a').forEach(a => a.classList.toggle('on', a.dataset.go === id));
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+</script>
