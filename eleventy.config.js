@@ -32,6 +32,9 @@ module.exports = function (eleventyConfig) {
   );
 
   return {
+    // Root by default (repo named <user>.github.io). If the site lives at
+    // <user>.github.io/<repo>/ instead, set a PATH_PREFIX of "/<repo>/".
+    pathPrefix: process.env.PATH_PREFIX || "/",
     dir: {
       input: "src",
       output: "_site",
