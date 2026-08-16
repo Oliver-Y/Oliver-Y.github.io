@@ -18,7 +18,7 @@ function version() {
 
 module.exports = {
   title: "Oliver Ye",
-  url: "https://oliverye.dev",
+  url: "https://oliver-y.github.io",
   version: version(),
   sections: [
     { key: "gadgets", label: "gadgets", title: "Gadgets & Gizmos" },
@@ -26,7 +26,7 @@ module.exports = {
     { key: "essays", label: "essays", title: "Essays" },
   ],
   links: {
-    github: "https://github.com/oliverye",
-    email: "mailto:hello@oliverye.dev",
+    github: "https://github.com/Oliver-Y",
+    email: "mailto:oliver.ye@applied.co", // swap for a personal address
   },
 };
