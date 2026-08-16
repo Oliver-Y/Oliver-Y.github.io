@@ -5,15 +5,13 @@ section: about
 permalink: /about/
 ---
 
-I'm an embedded software engineer. Most of my day is spent on sensor pipelines
-and hardware-in-the-loop rigs — the layer where cameras, clocks, and logs have to
-agree with each other in real time, and usually don't.
+Placeholder. A few paragraphs about who you are, what you work on, and why this
+site exists. This page has room for more than the one-liner on the home page.
 
-This site has three parts:
+The three sections:
 
-- **Gadgets & Gizmos** — bench notes and technical write-ups. Mostly things that
-  took me too long to figure out, written down so the next person spends less time on it.
-- **Kitchen & Quotes** — what I've cooked, read, and watched, plus lines worth keeping.
-- **Essays** — slower, less resolved thinking.
+- **Gadgets & Gizmos** — placeholder description.
+- **Kitchen & Quotes** — placeholder description.
+- **Essays** — placeholder description.
 
-The best way to reach me is email.
+How to get in touch goes here.
