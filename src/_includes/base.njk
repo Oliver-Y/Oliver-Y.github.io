@@ -31,26 +31,9 @@
 
     <footer class="mono">
       <span>{{ site.url | replace("https://", "") }}</span>
-      <button id="mode" type="button">light / dark</button>
+      <span>ver {{ site.version }}</span>
     </footer>
 
   </div>
-
-  <script>
-    (function () {
-      var root = document.documentElement;
-      var saved = localStorage.getItem("theme");
-      if (saved) root.classList.add(saved);
-
-      document.getElementById("mode").addEventListener("click", function () {
-        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        var isDark = root.classList.contains("dark") ||
-                     (prefersDark && !root.classList.contains("light"));
-        root.classList.toggle("dark", !isDark);
-        root.classList.toggle("light", isDark);
-        localStorage.setItem("theme", isDark ? "light" : "dark");
-      });
-    })();
-  </script>
 </body>
 </html>

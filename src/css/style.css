@@ -1,58 +1,22 @@
 /* ===================================================================
    Oliver Ye — personal site
    Housing:   warm off-white ABS plastic (Braun / early Sony)
-   Faceplate: brushed aluminium, cooler + higher value than the housing
    Indicator: amber-yellow lamp
-   Light is the default. Dark is a second design, not an inversion.
+   Light only. The faceplate is implied by a single hairline, not a box.
    =================================================================== */
 
 :root {
-  --ground:      #DCD8CE;  /* ABS housing */
-  --panel:       #E1E3E2;  /* aluminium faceplate, flat fallback */
-  --panel-hi:    #E9EBEA;  /* faceplate top */
-  --panel-lo:    #D6D9D8;  /* faceplate bottom */
-  --edge:        #F3F5F4;  /* bevelled top lip */
-  --panel-line:  #B2B5B4;  /* metal border */
-  --line:        #C4C0B4;  /* content hairlines, warm to match housing */
-  --trim:        #BDB9AD;  /* link underline at rest */
-  --ink:         #1E1C17;
-  --muted:       #5E5849;
-  --amber:       #E3AE3C;  /* lamp — decorative; never text on light */
-  --amber-txt:   #6F5108;  /* link amber, AA on housing */
+  --ground:    #DCD8CE;  /* ABS housing */
+  --panel:     #E4E2DA;  /* recessed areas: photo well, code blocks */
+  --line:      #C4C0B4;  /* hairlines */
+  --line-soft: #CFCBC0;  /* secondary hairlines */
+  --trim:      #BDB9AD;  /* link underline at rest */
+  --ink:       #1E1C17;
+  --muted:     #5E5849;
+  --amber:     #E3AE3C;  /* lamp — decorative; never text */
+  --amber-txt: #6F5108;  /* link amber, AA on housing */
 
   --measure: 640px;
-}
-
-:root.dark {
-  --ground:     #1A1815;
-  --panel:      #232527;
-  --panel-hi:   #2A2C2E;
-  --panel-lo:   #1E2022;
-  --edge:       #3C3F41;
-  --panel-line: #383B3D;
-  --line:       #2F2C27;
-  --trim:       #3A362E;
-  --ink:        #EDE8DD;
-  --muted:      #98917F;
-  --amber:      #FFC94E;
-  --amber-txt:  #FFD173;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --ground:     #1A1815;
-    --panel:      #232527;
-    --panel-hi:   #2A2C2E;
-    --panel-lo:   #1E2022;
-    --edge:       #3C3F41;
-    --panel-line: #383B3D;
-    --line:       #2F2C27;
-    --trim:       #3A362E;
-    --ink:        #EDE8DD;
-    --muted:      #98917F;
-    --amber:      #FFC94E;
-    --amber-txt:  #FFD173;
-  }
 }
 
 /* ---- base -------------------------------------------------------- */
@@ -76,49 +40,42 @@ body {
   font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--amber);
-  outline-offset: 2px;
-}
+a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
-/* ---- faceplate --------------------------------------------------- */
+/* ---- faceplate ---------------------------------------------------
+   No box, no fill, no radius. A control panel edge is one fine rule. */
 .bar {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 18px;
   flex-wrap: wrap;
-  background: linear-gradient(var(--panel-hi), var(--panel-lo));
-  border: 1px solid var(--panel-line);
-  border-top-color: var(--edge);
-  border-radius: 3px;
-  padding: 13px 16px;
-  margin-top: 26px;
+  padding: 30px 0 13px;
+  border-bottom: 1px solid var(--line);
 }
 
-.ident { display: flex; align-items: center; gap: 11px; }
+.ident { display: flex; align-items: baseline; gap: 10px; }
 
 .lamp {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--amber);
-  box-shadow: 0 0 9px 1px var(--amber);
   flex: none;
+  align-self: center;
 }
 
 .ident .who a {
   color: var(--ink);
   text-decoration: none;
-  font-size: 14px;
-  letter-spacing: .14em;
+  font-size: 13.5px;
+  letter-spacing: .16em;
   text-transform: uppercase;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 .ident .ver {
-  font-size: 10px;
+  font-size: 9.5px;
   letter-spacing: .16em;
   color: var(--muted);
   text-transform: uppercase;
@@ -132,9 +89,11 @@ button:focus-visible {
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
 }
 .bar nav a:hover { color: var(--ink); }
-.bar nav a.on { color: var(--amber-txt); }
+.bar nav a.on { color: var(--ink); border-bottom-color: var(--amber); }
 
 /* ---- home -------------------------------------------------------- */
 .hero {
@@ -149,10 +108,8 @@ button:focus-visible {
 .photo {
   width: 156px;
   height: 196px;
-  border-radius: 2px;
-  background: linear-gradient(var(--panel-hi), var(--panel-lo));
-  border: 1px solid var(--panel-line);
-  border-top-color: var(--edge);
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -211,8 +168,8 @@ a.inline:hover { border-color: var(--amber); }
   max-width: 56ch;
 }
 
-.row { padding: 16px 0; border-top: 1px solid var(--line); }
-.row:last-of-type { border-bottom: 1px solid var(--line); }
+.row { padding: 16px 0; border-top: 1px solid var(--line-soft); }
+.row:last-of-type { border-bottom: 1px solid var(--line-soft); }
 
 .row .meta {
   font-size: 9.5px;
@@ -231,7 +188,7 @@ a.inline:hover { border-color: var(--amber); }
 /* ---- post -------------------------------------------------------- */
 .post { padding-top: 42px; }
 
-.post-head { padding-bottom: 26px; border-bottom: 1px solid var(--line); }
+.post-head { padding-bottom: 26px; border-bottom: 1px solid var(--line-soft); }
 
 .post-head .meta {
   font-size: 9.5px;
@@ -252,7 +209,6 @@ a.inline:hover { border-color: var(--amber); }
 
 .prose { padding-top: 26px; }
 .prose > :first-child { margin-top: 0; }
-
 .prose p { margin: 0 0 17px; }
 
 .prose h2 {
@@ -281,21 +237,19 @@ a.inline:hover { border-color: var(--amber); }
   color: var(--muted);
 }
 
-.prose img { max-width: 100%; height: auto; border-radius: 2px; }
+.prose img { max-width: 100%; height: auto; }
 
 .prose code {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: .87em;
   background: var(--panel);
-  border: 1px solid var(--panel-line);
-  border-radius: 2px;
+  border: 1px solid var(--line-soft);
   padding: 1px 5px;
 }
 
 .prose pre {
   background: var(--panel);
-  border: 1px solid var(--panel-line);
-  border-radius: 3px;
+  border: 1px solid var(--line-soft);
   padding: 14px 16px;
   overflow-x: auto;
   font-size: 13.5px;
@@ -304,7 +258,7 @@ a.inline:hover { border-color: var(--amber); }
 .prose pre code { background: none; border: 0; padding: 0; font-size: inherit; }
 
 .prose table { width: 100%; border-collapse: collapse; margin: 0 0 17px; font-size: 15px; }
-.prose th, .prose td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.prose th, .prose td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line-soft); }
 .prose th { font-weight: 400; color: var(--muted); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .prose td { font-variant-numeric: tabular-nums; }
 
@@ -335,18 +289,6 @@ footer {
   text-transform: uppercase;
   color: var(--muted);
 }
-
-footer button {
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  color: var(--muted);
-  font: inherit;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-}
-footer button:hover { color: var(--ink); }
 
 /* ---- responsive -------------------------------------------------- */
 @media (max-width: 600px) {
