@@ -14,5 +14,5 @@ layout: base.njk
     {{ content | safe }}
   </div>
 
-  <a class="back mono" href="/{{ section }}/">← {{ section }}</a>
+  <a class="back mono" href="{{ ('/' + section + '/') | url }}">← {{ section }}</a>
 </article>
