@@ -1,22 +1,50 @@
 /* ===================================================================
    Oliver Ye — personal site
    Housing:   warm off-white ABS plastic (Braun / early Sony)
-   Indicator: amber-yellow lamp
-   Light only. The faceplate is implied by a single hairline, not a box.
+   Light only. The faceplate is implied by a hairline, not a box.
+
+   Two accent colors, two jobs — not one color lightened and darkened:
+     --amber      decoration only (lamp, hover, rules). Never text.
+     --amber-link the actual link color. Passes AA on the housing.
    =================================================================== */
 
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --ground:    #DCD8CE;  /* ABS housing */
-  --panel:     #E4E2DA;  /* recessed areas: photo well, code blocks */
-  --line:      #C4C0B4;  /* hairlines */
-  --line-soft: #CFCBC0;  /* secondary hairlines */
-  --trim:      #BDB9AD;  /* link underline at rest */
-  --ink:       #1E1C17;
-  --muted:     #5E5849;
-  --amber:     #E3AE3C;  /* lamp — decorative; never text */
-  --amber-txt: #6F5108;  /* link amber, AA on housing */
+  --ground:     #DCD8CE;  /* ABS housing */
+  --panel:      #E4E2DA;  /* recessed areas: photo well, code blocks */
+  --line:       #ACA695;  /* structural hairlines — 1.71:1, holds on dim screens */
+  --line-soft:  #BAB4A4;  /* content hairlines — 1.45:1 */
+  --trim:       #BDB9AD;  /* link underline at rest */
+  --ink:        #1E1C17;  /* body copy — reading text lives here */
+  --muted:      #5E5849;  /* genuinely secondary text only */
+  --amber:      #E3AE3C;  /* decoration only, never text */
+  --amber-link: #6F5108;  /* link color, 5.17:1 on ground */
 
   --measure: 640px;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Ubuntu, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 /* ---- base -------------------------------------------------------- */
@@ -27,23 +55,24 @@ body {
   color: var(--ink);
   margin: 0;
   padding: 0 28px 90px;
-  font-family: "Avenir Next", "Avenir", "Gill Sans", "Gill Sans MT", Optima,
-               -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 400;
+  font-family: var(--sans);
   font-size: 16.5px;
   line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
 }
 
 .wrap { max-width: var(--measure); margin: 0 auto; }
 
-.mono {
-  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-}
+.mono { font-family: var(--mono); }
 
-a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+/* Dates and counts line up in columns. */
+time, .count { font-variant-numeric: tabular-nums; }
 
-/* ---- faceplate ---------------------------------------------------
-   No box, no fill, no radius. A control panel edge is one fine rule. */
+a:focus-visible { outline: 2px solid var(--amber-link); outline-offset: 2px; }
+
+/* ---- masthead ----------------------------------------------------
+   The one place uppercase + letterspacing is spent. Everything else
+   downstream stays sentence case and quiet. */
 .bar {
   display: flex;
   align-items: baseline;
@@ -60,33 +89,39 @@ a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--amber);
   flex: none;
   align-self: center;
+  background: transparent;
+  border: 1px solid var(--line);
+}
+/* Lit when the newest post is recent — an indicator, not an ornament. */
+.lamp.on {
+  background: var(--amber);
+  border-color: var(--amber);
 }
 
 .ident .who a {
   color: var(--ink);
   text-decoration: none;
+  font-family: var(--mono);
   font-size: 13.5px;
   letter-spacing: .16em;
   text-transform: uppercase;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 .ident .ver {
+  font-family: var(--mono);
   font-size: 9.5px;
   letter-spacing: .16em;
   color: var(--muted);
   text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
 
-.bar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.bar nav { display: flex; gap: 20px; flex-wrap: wrap; }
 
 .bar nav a {
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font-size: 14px;
   color: var(--muted);
   text-decoration: none;
   padding-bottom: 2px;
@@ -113,6 +148,7 @@ a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--mono);
   font-size: 9px;
   letter-spacing: .2em;
   color: var(--muted);
@@ -120,16 +156,17 @@ a:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 }
 
 .lede {
-  font-size: 21px;
-  line-height: 1.45;
+  font-size: 20px;
+  line-height: 1.5;
   margin: 0 0 18px;
-  letter-spacing: .005em;
+  letter-spacing: -.005em;
 }
 
-.hero p { color: var(--muted); margin: 0 0 15px; font-size: 16px; }
+/* Body copy is ink. Muted is for metadata, not for reading text. */
+.hero p { color: var(--ink); margin: 0 0 15px; font-size: 16.5px; }
 
 a.inline {
-  color: var(--amber-txt);
+  color: var(--amber-link);
   text-decoration: none;
   border-bottom: 1px solid var(--trim);
 }
@@ -137,50 +174,81 @@ a.inline:hover { border-color: var(--amber); }
 
 .rail {
   display: flex;
-  gap: 20px;
-  margin-top: 24px;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  gap: 18px;
+  margin-top: 26px;
+  font-size: 14px;
 }
 .rail a { color: var(--muted); text-decoration: none; }
-.rail a:hover { color: var(--amber-txt); }
+.rail a:hover { color: var(--amber-link); }
+
+/* ---- recent, on the home page ------------------------------------ */
+.recent { margin-top: 54px; }
+
+.recent h2 {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+  margin: 0 0 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.recent ul { list-style: none; margin: 0; padding: 0; }
+
+.recent li {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.recent .when {
+  flex: none;
+  width: 66px;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.recent a { color: var(--ink); text-decoration: none; font-size: 16px; }
+.recent a:hover { color: var(--amber-link); }
+.recent .where { color: var(--muted); font-size: 13px; }
 
 /* ---- section index ----------------------------------------------- */
 .sheet { padding-top: 42px; }
 
 .sheet h2 {
-  font-size: 10px;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-size: 15px;
   font-weight: 400;
-  margin: 0 0 16px;
+  color: var(--ink);
+  margin: 0 0 14px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
 }
+.sheet h2 .count { color: var(--muted); font-size: 13px; }
 
 .section-intro {
-  color: var(--muted);
-  font-size: 15px;
+  color: var(--ink);
+  font-size: 16px;
   margin: 0 0 22px;
   max-width: 56ch;
 }
 
-.row { padding: 16px 0; border-top: 1px solid var(--line-soft); }
-.row:last-of-type { border-bottom: 1px solid var(--line-soft); }
+.row { padding: 15px 0; border-bottom: 1px solid var(--line-soft); }
 
 .row .meta {
-  font-size: 9.5px;
-  letter-spacing: .14em;
+  font-size: 13px;
   color: var(--muted);
-  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
 
-.row .t { font-size: 17.5px; display: block; margin-top: 3px; }
+.row .t { font-size: 17.5px; display: block; margin-top: 2px; }
 .row .t a { color: var(--ink); text-decoration: none; }
-.row .t a:hover { color: var(--amber-txt); }
+.row .t a:hover { color: var(--amber-link); }
 .row .s { color: var(--muted); font-size: 15px; }
 
 .empty { color: var(--muted); font-size: 15px; }
@@ -188,41 +256,39 @@ a.inline:hover { border-color: var(--amber); }
 /* ---- post -------------------------------------------------------- */
 .post { padding-top: 42px; }
 
-.post-head { padding-bottom: 26px; border-bottom: 1px solid var(--line-soft); }
+.post-head { padding-bottom: 24px; border-bottom: 1px solid var(--line); }
 
 .post-head .meta {
-  font-size: 9.5px;
-  letter-spacing: .14em;
+  font-size: 13px;
   color: var(--muted);
-  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
 
 .post-head h1 {
-  font-size: 27px;
-  font-weight: 400;
-  line-height: 1.25;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -.015em;
   margin: 8px 0 0;
   text-wrap: balance;
 }
 
-.post-head .blurb { color: var(--muted); margin: 8px 0 0; font-size: 16px; }
+.post-head .blurb { color: var(--muted); margin: 9px 0 0; font-size: 16px; }
 
 .prose { padding-top: 26px; }
 .prose > :first-child { margin-top: 0; }
 .prose p { margin: 0 0 17px; }
 
 .prose h2 {
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 400;
-  margin: 36px 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin: 36px 0 11px;
 }
 
-.prose h3 { font-size: 18px; font-weight: 400; margin: 28px 0 10px; }
+.prose h3 { font-size: 16.5px; font-weight: 600; margin: 28px 0 9px; }
 
-.prose a { color: var(--amber-txt); text-decoration: none; border-bottom: 1px solid var(--trim); }
+.prose a { color: var(--amber-link); text-decoration: none; border-bottom: 1px solid var(--trim); }
 .prose a:hover { border-color: var(--amber); }
 
 .prose strong { font-weight: 600; }
@@ -240,8 +306,8 @@ a.inline:hover { border-color: var(--amber); }
 .prose img { max-width: 100%; height: auto; }
 
 .prose code {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: .87em;
+  font-family: var(--mono);
+  font-size: .86em;
   background: var(--panel);
   border: 1px solid var(--line-soft);
   padding: 1px 5px;
@@ -259,7 +325,7 @@ a.inline:hover { border-color: var(--amber); }
 
 .prose table { width: 100%; border-collapse: collapse; margin: 0 0 17px; font-size: 15px; }
 .prose th, .prose td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line-soft); }
-.prose th { font-weight: 400; color: var(--muted); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.prose th { font-weight: 600; font-size: 14px; }
 .prose td { font-variant-numeric: tabular-nums; }
 
 .table-scroll { overflow-x: auto; }
@@ -267,13 +333,11 @@ a.inline:hover { border-color: var(--amber); }
 .back {
   display: inline-block;
   margin-top: 40px;
-  font-size: 10px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font-size: 14px;
   color: var(--muted);
   text-decoration: none;
 }
-.back:hover { color: var(--amber-txt); }
+.back:hover { color: var(--amber-link); }
 
 /* ---- footer ------------------------------------------------------ */
 footer {
@@ -284,11 +348,10 @@ footer {
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  font-size: 9.5px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font-size: 13px;
   color: var(--muted);
 }
+footer .ver { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 /* ---- responsive -------------------------------------------------- */
 @media (max-width: 600px) {

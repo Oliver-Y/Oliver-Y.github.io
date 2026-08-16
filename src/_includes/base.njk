@@ -13,7 +13,10 @@
 
     <div class="bar">
       <div class="ident">
-        <span class="lamp" aria-hidden="true"></span>
+        {%- set newest = collections.everything | first %}
+        {%- set fresh = newest.date | isFresh %}
+        <span class="lamp{% if fresh %} on{% endif %}"
+              title="{% if fresh %}Updated in the last 30 days{% else %}No posts in the last 30 days{% endif %}"></span>
         <span class="who"><a href="{{ '/' | url }}">{{ site.title }}</a></span>
         <span class="ver mono">ver {{ site.version }}</span>
       </div>
@@ -29,9 +32,9 @@
       {{ content | safe }}
     </main>
 
-    <footer class="mono">
+    <footer>
       <span>{{ site.url | replace("https://", "") }}</span>
-      <span>ver {{ site.version }}</span>
+      <span class="ver">ver {{ site.version }}</span>
     </footer>
 
   </div>

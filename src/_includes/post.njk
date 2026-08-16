@@ -3,7 +3,7 @@ layout: base.njk
 ---
 <article class="post">
   <div class="post-head">
-    <div class="meta mono">
+    <div class="meta">
       {{ date | date }}{% if kind %} · {{ kind }}{% endif %}
     </div>
     <h1>{{ title }}</h1>
@@ -14,5 +14,5 @@ layout: base.njk
     {{ content | safe }}
   </div>
 
-  <a class="back mono" href="{{ ('/' + section + '/') | url }}">← {{ section }}</a>
+  <a class="back" href="{{ ('/' + section + '/') | url }}">← {{ section | sectionTitle }}</a>
 </article>

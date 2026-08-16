@@ -17,3 +17,20 @@ section: home
     </div>
   </div>
 </div>
+
+<section class="recent">
+  <h2>Recent</h2>
+  <ul>
+    {%- for post in collections.everything | take(5) %}
+    <li>
+      <span class="when">{{ post.date | date }}</span>
+      <span>
+        <a href="{{ post.url | url }}">{{ post.data.title }}</a>
+        <span class="where">— {{ post.data.section | sectionTitle }}</span>
+      </span>
+    </li>
+    {%- else %}
+    <li><span class="where">Nothing posted yet.</span></li>
+    {%- endfor %}
+  </ul>
+</section>
