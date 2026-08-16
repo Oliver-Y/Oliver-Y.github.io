@@ -1,0 +1,6 @@
+{
+  "layout": "post.njk",
+  "tags": "essays",
+  "section": "essays",
+  "permalink": "/essays/{{ page.fileSlug }}/"
+}

@@ -1,0 +1,23 @@
+---
+layout: base.njk
+---
+<div class="sheet">
+  <h2 class="mono">
+    <span>{{ heading }}</span>
+    <span>{{ collections[section] | length }}</span>
+  </h2>
+
+  {% if intro %}<p class="section-intro">{{ intro }}</p>{% endif %}
+
+  {%- for post in collections[section] %}
+  <div class="row">
+    <span class="meta mono">
+      {{ post.date | date }}{% if post.data.kind %} · {{ post.data.kind }}{% endif %}
+    </span>
+    <span class="t"><a href="{{ post.url }}">{{ post.data.title }}</a></span>
+    {%- if post.data.blurb %}<span class="s">{{ post.data.blurb }}</span>{% endif %}
+  </div>
+  {%- else %}
+  <p class="empty">Nothing here yet.</p>
+  {%- endfor %}
+</div>
