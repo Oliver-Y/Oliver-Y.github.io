@@ -2,16 +2,16 @@
 layout: base.njk
 ---
 <div class="sheet">
-  <h2 class="mono">
+  <h2>
     <span>{{ heading }}</span>
-    <span>{{ collections[section] | length }}</span>
+    <span class="count">{{ collections[section] | length }}</span>
   </h2>
 
   {% if intro %}<p class="section-intro">{{ intro }}</p>{% endif %}
 
   {%- for post in collections[section] %}
   <div class="row">
-    <span class="meta mono">
+    <span class="meta">
       {{ post.date | date }}{% if post.data.kind %} · {{ post.data.kind }}{% endif %}
     </span>
     <span class="t"><a href="{{ post.url | url }}">{{ post.data.title }}</a></span>
