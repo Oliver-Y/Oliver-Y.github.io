@@ -21,9 +21,9 @@ module.exports = {
   url: "https://oliver-y.github.io",
   version: version(),
   sections: [
+    { key: "notes", label: "notes", title: "Technical Notes" },
     { key: "gadgets", label: "gadgets", title: "Gadgets & Gizmos" },
-    { key: "kitchen", label: "kitchen", title: "Kitchen & Quotes" },
-    { key: "essays", label: "essays", title: "Essays" },
+    { key: "quotes", label: "quotes", title: "Quotes" },
   ],
   links: {
     github: "https://github.com/Oliver-Y",

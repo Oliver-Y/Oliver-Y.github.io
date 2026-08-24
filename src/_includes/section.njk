@@ -8,6 +8,7 @@ layout: base.njk
   </h2>
 
   {% if intro %}<p class="section-intro">{{ intro }}</p>{% endif %}
+  {% if submitLabel %}<p class="submit-cta"><a class="inline" href="{{ submitHref }}">{{ submitLabel }} →</a></p>{% endif %}
 
   {%- for post in collections[section] %}
   <div class="row">

@@ -18,12 +18,12 @@ module.exports = function (eleventyConfig) {
       .reverse();
 
   eleventyConfig.addCollection("gadgets", (c) => live(c, "gadgets"));
-  eleventyConfig.addCollection("kitchen", (c) => live(c, "kitchen"));
-  eleventyConfig.addCollection("essays", (c) => live(c, "essays"));
+  eleventyConfig.addCollection("quotes", (c) => live(c, "quotes"));
+  eleventyConfig.addCollection("notes", (c) => live(c, "notes"));
 
   // Everything across all three sections, newest first — used by the feed.
   eleventyConfig.addCollection("everything", (c) =>
-    ["gadgets", "kitchen", "essays"]
+    ["gadgets", "quotes", "notes"]
       .flatMap((tag) => live(c, tag))
       .sort((a, b) => b.date - a.date)
   );
