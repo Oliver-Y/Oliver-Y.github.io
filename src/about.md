@@ -10,8 +10,8 @@ site exists. This page has room for more than the one-liner on the home page.
 
 The three sections:
 
+- **Technical Notes** — placeholder description.
 - **Gadgets & Gizmos** — placeholder description.
-- **Kitchen & Quotes** — placeholder description.
-- **Essays** — placeholder description.
+- **Quotes** — placeholder description.
 
 How to get in touch goes here.

@@ -14,5 +14,7 @@ layout: base.njk
     {{ content | safe }}
   </div>
 
+  {% if source %}<p class="source"><a class="inline" href="{{ source }}">View original source ↗</a></p>{% endif %}
+
   <a class="back" href="{{ ('/' + section + '/') | url }}">← {{ section | sectionTitle }}</a>
 </article>

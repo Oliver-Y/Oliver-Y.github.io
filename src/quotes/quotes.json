@@ -1,0 +1,6 @@
+{
+  "layout": "post.njk",
+  "tags": "quotes",
+  "section": "quotes",
+  "permalink": "/quotes/{{ page.fileSlug }}/"
+}

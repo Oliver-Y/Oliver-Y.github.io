@@ -234,9 +234,19 @@ a.inline:hover { border-color: var(--amber); }
 .section-intro {
   color: var(--ink);
   font-size: 16px;
-  margin: 0 0 22px;
+  margin: 0 0 12px;
   max-width: 56ch;
 }
+
+.submit-cta { margin: 0 0 22px; }
+.submit-cta a {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--trim);
+}
+.submit-cta a:hover { color: var(--amber-link); border-color: var(--amber); }
 
 .row { padding: 15px 0; border-bottom: 1px solid var(--line-soft); }
 
@@ -329,6 +339,11 @@ a.inline:hover { border-color: var(--amber); }
 .prose td { font-variant-numeric: tabular-nums; }
 
 .table-scroll { overflow-x: auto; }
+
+.source {
+  margin-top: 28px;
+  font-size: 14px;
+}
 
 .back {
   display: inline-block;
