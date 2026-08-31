@@ -1,6 +1,6 @@
 ---
 title: "\"Some men see things as they are and say why. I dream things that never were and say why not.\""
-date: 2026-08-23
+date: 2026-08-01
 kind: Speech
 blurb: "— Edward M. Kennedy, eulogy for Robert F. Kennedy, St. Patrick's Cathedral, New York City, June 8, 1968"
 source: "http://www.tedkennedy.org/ownwords/event/eulogy.html"
