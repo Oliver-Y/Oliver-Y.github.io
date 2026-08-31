@@ -38,5 +38,5 @@ blurb: "— Charles Hamilton Houston, quoted in Gilbert King, Devil in the Grove
 > even he dared to hope …."
 
 Black civil rights leaders had dealt with injustice since the inception of this country, baked into its very constitution. 
-Yet they still dared to dream. Houston, case by case, laid down the foundations of a well for generations of civil rights activists to draw upon. And now, elements of those dreams are the reality we live in now.
+Yet they still dared to dream. Houston, case by case, laid down the foundations of a well for generations of civil rights activists to draw upon. And now, elements of those dreams are the reality we live in now. 
 
