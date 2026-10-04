@@ -3,6 +3,16 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/img");
   eleventyConfig.addPassthroughCopy("src/fonts");
   eleventyConfig.addPassthroughCopy("src/files");
+  eleventyConfig.addPassthroughCopy({
+    "./node_modules/katex/dist/katex.min.css": "css/katex.min.css",
+  });
+  eleventyConfig.addPassthroughCopy({
+    "./node_modules/katex/dist/fonts": "css/fonts",
+  });
+
+  const md = require("markdown-it")({ html: true });
+  md.use(require("@vscode/markdown-it-katex").default);
+  eleventyConfig.setLibrary("md", md);
 
   eleventyConfig.addFilter("date", (value, format) => {
     const d = value === "now" ? new Date() : new Date(value);
