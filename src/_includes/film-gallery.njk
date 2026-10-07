@@ -1,11 +1,9 @@
 {%- set photos = film | byYear(year) -%}
 <div class="sheet">
   <h2>
-    <span>Film</span>
+    <span>Film <span class="sub">Olympus OM-1 · 35mm film</span></span>
     <span class="count">{{ photos | length }}</span>
   </h2>
-
-  <p class="section-intro">Shot on an Olympus OM-1, 35mm film.</p>
 
   <nav class="film-years">
     <a href="{{ '/film/' | url }}"{% if not year %} class="on" aria-current="page"{% endif %}>all</a>
