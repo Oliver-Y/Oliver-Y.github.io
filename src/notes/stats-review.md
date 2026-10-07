@@ -4,8 +4,8 @@ date: 2026-09-24
 blurb: Review of Ch 2-4 of Probabilistic Machine Learning — random variables, the distribution catalogue, Gaussians, and Bayesian inference.
 ---
 
-I wish I took the time to understand stats in high school or college and I
-think it's one of those subjects that's important to learn and internalize. At
+I wish I took the time to understand stats in college. It's 
+one of those subjects that's important to learn and internalize. At
 the root of it (at least in my opinion) is it provides a way to quantify
 uncertainty. It has heavy applications in all these ML papers I read but also,
 feels like it'd be a useful tool in confronting a world that feels incredibly
@@ -15,7 +15,7 @@ on learning/re-learning the foundations.
 ## 0. RV — Random variables
 
 I find myself constantly needing to remind myself, that at the core of it, it's
-just some random variable X with some set of outcomes (state space) and it's
+a random variable X with some set of outcomes (state space) and it's
 about assigning a probability to every outcome.
 
 The nature of X can change which gives us more information, e.g. continuous,
@@ -37,8 +37,8 @@ day, we're just placing probability densities/mass over RVs.
 
 ### Conditionals, Independence, Joint probabilities
 
-Random variables are often related/un-related to each other and that gives more
-insight.
+Random variables are often related to each other and that gives more
+information.
 
 - Joint probability: $P(A, B)$ — if independent, then $P(A) \cdot P(B)$
 - Conditional probability: $P(A \mid B) = \dfrac{P(A, B)}{P(B)}$
@@ -48,7 +48,6 @@ insight.
 
 ### Bayes rule
 
-- Super important.
 - $p(\theta \mid D) = \dfrac{p(\theta)\, p(D \mid \theta)}{p(D)}$
 - Intuitively, it's easy to miss the prior and only look at likelihood when
   examining data. But strong priors are less influenced by weak likelihoods and
@@ -61,14 +60,12 @@ insight.
 
 The nature of random events often give rise to common distributions, which can
 be presented in any of the PMF, CDF, or PDF forms above, but ultimately are
-parameterized ways to describe common RVs we'll see. This may be discrete /
-binary outcomes, one-hot encodings, or even continuous values. I only went
-through a subset within this textbook, but it seems distributions generally
-provide a structured/parameterized way to categorize probability mass/density.
+parameterized ways to describe common RVs and their probability mass/densities. 
+Below is a subset from the book. 
 
 ### Bernoulli / Binomial
 
-Bernoulli: params θ, X results in binary events.
+Bernoulli: params θ, S results in binary events.
 
 $$\mathrm{Ber}(s \mid \theta) \triangleq \theta^s (1-\theta)^{1-s}$$
 
@@ -87,13 +84,22 @@ Categorical: params: (C−1) θ, one θ each class, all θ sum up to 1.
 $$\mathrm{Cat}(y \mid \theta) \triangleq \prod_{c=1}^{C} \theta_c^{y_c}$$
 
 - One-hot encoding lets this happen: $(y_0, y_1, y_2, y_3, \dots) = (0, 0, 1,
-  0)$, so only one probability is active at one time. Although, the params (θ)
-  kind of already give the direct prob distribution? So the novelty is just the
-  encoding? Feels a touch weird here.
+  0)$, so only one probability is active at one time.
+- Quick example with $C = 3$,
+  $\theta = (0.2, 0.5, 0.3)$, and class 2 observed, $y = (0, 1, 0)$:
 
-Multinomial: params (C−1) θ, N — N number of categorical events.
+  $$\mathrm{Cat}(y \mid \theta) = 0.2^0 \cdot 0.5^1 \cdot 0.3^0 = 1 \cdot 0.5 \cdot 1 = 0.5$$
+
+
+Multinomial: params θ (same as categorical), N number of categorical events.
+$s_c$ counts how many times class c showed up.
 
 $$\mathrm{Mult}(\mathbf{s} \mid N, \theta) \triangleq \binom{N}{s_1, \dots, s_C} \prod_{c=1}^{C} \theta_c^{s_c}$$
+
+- Quick example with the same $\theta = (0.2, 0.5, 0.3)$, $N = 4$ draws,
+  counts $s = (1, 2, 1)$:
+
+  $$\mathrm{Mult}(s \mid 4, \theta) = \frac{4!}{1!\,2!\,1!} \cdot 0.2^1 \cdot 0.5^2 \cdot 0.3^1 = 12 \cdot 0.015 = 0.18$$
 
 - Softmax w/ temperature is often used to deal with the θ-sums-up-to-1
   constraint so we can work with raw logits. Temperature controls how spread
@@ -104,7 +110,7 @@ $$\mathrm{Mult}(\mathbf{s} \mid N, \theta) \triangleq \binom{N}{s_1, \dots, s_C}
 - Logistic regression on multinomial case is just the multi-dimensional
   version of $w x + b$. $W = C \times D$ matrix, $b$ = C dim vector. We
   parameterize by $W$ instead, which indirectly controls the θ's through a
-  linear transform followed by softmax.
+  linear transform followed by softmax. Will see this example down the road.
 
 ### Gaussians
 
@@ -125,7 +131,7 @@ $$\mathcal{N}(y \mid \mu, \sigma^2) \triangleq \frac{1}{\sqrt{2\pi\sigma^2}}\, e
   - Noise usually is a group of independent things that add onto the end result
   - CLT generally doesn't care what the underlying distribution is. As long as
     we sum IID terms with finite variance (Cauchy breaks this), the standardized sum
-    approaches Gaussian (neat trick: just pick a space where it's additive (log))
+    approaches Gaussian (neat trick: just pick a space where it's additive e.g log)
 - Maximum entropy: of all distributions with a given mean and variance, the
   Gaussian has the highest entropy, so it assumes the least beyond those two
   numbers
@@ -143,10 +149,16 @@ between dimensions through covariance. This additional information allows us
 to extract relationships between dimensions and describe them through joints,
 conditionals, and marginals.
 
+{% include "figures/joint-vs-marginal.html" %}
+
+Note: Gaussian along each axis isn't enough for "joint". On the right,
+$Y = \pm X$ (coin flip): both axes are bells, but the cloud is an X. Joint
+means every $aX + bY$ is Gaussian.
+
 #### Covariance
 
 - Cov of 2 RVs: $\mathrm{Cov}[X, Y] \triangleq \mathbb{E}\big[(X - \mathbb{E}[X])(Y - \mathbb{E}[Y])\big]$
-  - In words: expectation of how much one RV differs from its mean multiplied
+  - Verbose: expectation of how much one RV differs from its mean multiplied
     by how much the other RV differs from its mean. Simply put, how do the
     deviations of two variables move together.
     - Why multiply? Let's say X and Y are comprised of $S$, $N_x$, $N_y$,
@@ -194,6 +206,10 @@ conditionals, and marginals.
     - Note: hugging a line means that the deviations relative to their own
       means move in a fixed ratio and direction, since variance is a measure
       of deviation, not the means themselves.
+    - Note 2: $\rho$ is set by the ratio of shared signal to independent noise.
+      More shared signal raises it, more independent noise lowers it. Rescaling
+      an axis stretches both by the same factor, so Cov and slope change but
+      $\rho$ doesn't.
 - Overall: covariance matrix allows us to mathematically describe the
   relationship between RVs laid along different dimensions.
 
@@ -226,6 +242,10 @@ Mean:
     diff here. Thus, $\Sigma_{22}$ can only grow
     independently of $\Sigma_{12}$ if $y_2$ has some extra noise that $y_1$
     doesn't have.
+  - Note 2: loosely, $\Sigma_{12}\Sigma_{22}^{-1} = \dfrac{V[S]}{V[S] + V[N_2]}$.
+    If $y_2$ has more independent noise, this shrinks and we lean on $y_2$
+    less, because intuitively $y_2$ gives less information about $y_1$: more
+    of its movement is its own noise, not the shared part.
 - $(y_2 - \mu_2)$: correlation is defined relative to means. It says if $y_2$
   deviates this much from average, $y_1$ moves by the shared fraction of that
   deviation.
@@ -364,29 +384,38 @@ evidence together, to compute $p(z \mid \mathbf{y})$.
 
 ## 3. Bayes, Bayesian inference, MLE, MAP, Bayesian posterior predictive
 
-So far we've been given $\theta$. Now we have to find it.
+So far we've been given $\theta$. Usually, we have to find it.
 
 Aleatoric vs epistemic uncertainty: aleatoric is what we've been working with in
-the sections above. When we know the true parameters, we also know the true
-variance/uncertainty that's in the data. Now that we're tackling finding the
-true parameter, there's an extra layer of uncertainty on top, which is our
-guesses as to what the parameters are (epistemic).
+the sections above. One set of parameters (true variance) capture 
+inherent uncertainty in data. When evaluating multiple sets of paramters, 
+there's an extra layer of epistemic uncertainty since we're guessing waht the true 
+paramters might be. 
 
 Point estimates (MLE, MAP, even the posterior mean) collapse $\theta$ to one
 number before predicting, so the epistemic part is thrown away. The Bayesian
-way carries the whole distribution over $\theta$ through the prediction (4.6).
+way carries the whole distribution over $\theta$ through the prediction. 
 
 ### Point estimate methods
 
 #### MLE
 
 **MLE:** highest probability to training data (equals MAP under a flat prior), gives one
-theta → literally one set of weights, `model.pt`.
+theta (think one set of weights)
 
 $$\boxed{\hat\theta_{\mathrm{mle}} = \arg\max_\theta \, p(D \mid \theta)}$$
 
 1. $p(D \mid \theta) = \prod_{n=1}^{N} p(y_n \mid x_n, \theta)$, we take the log to
    turn the product into a sum (and negate it, NLL, to minimize).
+   - Note: why a product? We assume the data is iid: each example is an
+     independent draw from the same distribution, given $\theta$. That lets the
+     joint over all $N$ examples factor into one term per example, same as
+     $P(A, B) = P(A) \cdot P(B)$:
+
+     $$p(y_1, \dots, y_N \mid x_1, \dots, x_N, \theta) = p(y_1 \mid x_1, \theta) \cdots p(y_N \mid x_N, \theta)$$
+
+     It's an assumption about how the data was collected, not something we
+     prove, and it breaks for things like time series.
 2. $\hat\theta_{\mathrm{mle}} = \arg\max_\theta \sum_{n=1}^{N} \log p(y_n \mid x_n, \theta)$
    and $\hat\theta_{\mathrm{mle}} = \arg\min_\theta -\sum_{n=1}^{N} \log p(y_n \mid x_n, \theta)$.
 
@@ -402,14 +431,14 @@ Why MLE is acceptable:
   $$\mathrm{KL}(p_{\mathrm{emp}} \,\|\, p_\theta) = \underbrace{-\mathbb{H}(p_{\mathrm{emp}})}_{\text{no } \theta} \; - \; \frac{1}{N}\sum_{n=1}^{N} \log p(y_n \mid \theta)$$
 
 **Worked examples:** these 3 examples all show that MLE works out to intuitive
-solutions that represent the empirical data. Plug the formula for the
+solutions that represent the empirical data. The general approach is to plug the formula for the
 distribution into the NLL, then solve for the critical point.
 
 1. MLE on Bernoulli ($N_1$ = heads):
 
    $$\boxed{\hat\theta_{\mathrm{mle}} = \frac{N_1}{N_0 + N_1}}$$
 
-   the intuitive fraction of heads.
+   An intuitive result: just the fraction of heads out total coin clips
 
 2. MLE on categorical (Lagrange multiplier for the constraint
    $\sum_k \theta_k = 1$):
@@ -439,6 +468,12 @@ other things are analogous to MLE.
   matrix transform $w^\top x$. Assuming variance is fixed, we plug into the NLL
   the same Gaussian, except with $w^\top x_n$ as the mean,
   $\mathcal{N}(y_n \mid w^\top x_n, \sigma^2)$.
+- Full NLL, plugging in the Gaussian PDF:
+
+  $$\begin{aligned}
+  \mathrm{NLL}(w) &= -\sum_{n=1}^{N} \log \left[ \frac{1}{\sqrt{2\pi\sigma^2}} \exp\!\left( -\frac{(y_n - w^\top x_n)^2}{2\sigma^2} \right) \right] \\
+  &= \underbrace{\frac{N}{2} \log(2\pi\sigma^2)}_{\text{no } w} + \underbrace{\frac{1}{2\sigma^2}}_{\text{scale}} \sum_{n=1}^{N} (y_n - w^\top x_n)^2
+  \end{aligned}$$
 - If we drop all constants ($\sigma$ included), the NLL boils down to
   - RSS $= \sum_{n=1}^{N} (y_n - w^\top x_n)^2$. The expression inside,
     $r_n = y_n - w^\top x_n$, is known as the residual error, and this
@@ -511,9 +546,7 @@ $$\hat\Sigma_{\mathrm{map}} = \lambda \Sigma_0 + (1 - \lambda)\hat\Sigma_{\mathr
 
   $$C(\theta) = \|\theta\|_2^2 \quad \Longleftrightarrow \quad -\log \mathcal{N}(\theta \mid 0, \sigma_0^2 I) = \frac{1}{2\sigma_0^2}\|\theta\|_2^2 + \text{const}$$
 
-**Example #4: Early stopping.** Bro no way, they had a section called
-early-stopping, where you literally stop it early by monitoring validation
-performance?
+**Example #4: Early stopping.** Haha, surprisingly self-explanatory.
 
 It's not a $C(\theta)$ term: it regularizes by limiting how far the optimizer
 travels from its init, stopping when validation loss stops improving.
