@@ -1,83 +1,12 @@
 [
   {
-    "file": "alamo-square-2025-03.jpg",
-    "place": "Alamo Square, SF",
-    "when": "March 2025",
-    "width": 1545,
-    "height": 1024,
-    "year": "2025"
-  },
-  {
-    "file": "old-town-store-2025-05.jpg",
-    "place": "Old Town",
-    "when": "May 2025",
-    "width": 2000,
-    "height": 1326,
-    "year": "2025"
-  },
-  {
-    "file": "old-town-2025-05.jpg",
-    "place": "Old Town",
-    "when": "May 2025",
-    "width": 2000,
-    "height": 1326,
-    "year": "2025"
-  },
-  {
-    "file": "new-haven-2025-06.jpg",
-    "place": "New Haven",
-    "when": "June 2025",
-    "width": 2000,
-    "height": 1326,
-    "year": "2025"
-  },
-  {
-    "file": "mission-shop-2025-11.jpg",
-    "place": "Shop in the Mission, SF",
-    "when": "November 2025",
-    "width": 1545,
-    "height": 1024,
-    "year": "2025"
-  },
-  {
     "file": "santa-cruz-2026.jpg",
     "place": "Santa Cruz",
-    "when": "2026",
+    "when": "September 2026",
     "width": 1545,
     "height": 1024,
-    "year": "2026"
-  },
-  {
-    "file": "angel-island-2026.jpg",
-    "place": "Angel Island",
-    "when": "2026",
-    "width": 1545,
-    "height": 1024,
-    "year": "2026"
-  },
-  {
-    "file": "sd-zoo-2026-03.jpg",
-    "place": "San Diego Zoo",
-    "when": "March 2026",
-    "width": 1545,
-    "height": 1024,
-    "year": "2026"
-  },
-  {
-    "file": "apartment-2026-06.jpg",
-    "place": "Apartment, SF",
-    "when": "June 2026",
-    "width": 1545,
-    "height": 1024,
-    "year": "2026"
-  },
-  {
-    "file": "mission-bay-2026-07.jpg",
-    "place": "Mission Bay, SF",
-    "when": "July 2026",
-    "width": 1545,
-    "height": 1024,
-    "year": "2026"
+    "year": "2026",
+    "date": "2026-09"
   },
   {
     "file": "new-haven-2026-09.jpg",
@@ -85,6 +14,88 @@
     "when": "September 2026",
     "width": 1545,
     "height": 1024,
-    "year": "2026"
+    "year": "2026",
+    "date": "2026-09"
+  },
+  {
+    "file": "mission-bay-2026-07.jpg",
+    "place": "Mission Bay, SF",
+    "when": "July 2026",
+    "width": 1545,
+    "height": 1024,
+    "year": "2026",
+    "date": "2026-07"
+  },
+  {
+    "file": "apartment-2026-06.jpg",
+    "place": "Apartment, SF",
+    "when": "June 2026",
+    "width": 1545,
+    "height": 1024,
+    "year": "2026",
+    "date": "2026-06"
+  },
+  {
+    "file": "angel-island-2026.jpg",
+    "place": "Angel Island",
+    "when": "April 2026",
+    "width": 1545,
+    "height": 1024,
+    "year": "2026",
+    "date": "2026-04"
+  },
+  {
+    "file": "sd-zoo-2026-03.jpg",
+    "place": "San Diego Zoo",
+    "when": "March 2026",
+    "width": 1545,
+    "height": 1024,
+    "year": "2026",
+    "date": "2026-03"
+  },
+  {
+    "file": "mission-shop-2025-11.jpg",
+    "place": "Shop in the Mission, SF",
+    "when": "November 2025",
+    "width": 1545,
+    "height": 1024,
+    "year": "2025",
+    "date": "2025-11"
+  },
+  {
+    "file": "new-haven-2025-06.jpg",
+    "place": "New Haven",
+    "when": "June 2025",
+    "width": 2000,
+    "height": 1326,
+    "year": "2025",
+    "date": "2025-06"
+  },
+  {
+    "file": "old-town-store-2025-05.jpg",
+    "place": "Old Town",
+    "when": "May 2025",
+    "width": 2000,
+    "height": 1326,
+    "year": "2025",
+    "date": "2025-05"
+  },
+  {
+    "file": "old-town-2025-05.jpg",
+    "place": "Old Town",
+    "when": "May 2025",
+    "width": 2000,
+    "height": 1326,
+    "year": "2025",
+    "date": "2025-05"
+  },
+  {
+    "file": "alamo-square-2025-03.jpg",
+    "place": "Alamo Square, SF",
+    "when": "March 2025",
+    "width": 1545,
+    "height": 1024,
+    "year": "2025",
+    "date": "2025-03"
   }
 ]

@@ -43,8 +43,11 @@ module.exports = function (eleventyConfig) {
     return age >= 0 && age <= FRESH_DAYS;
   });
 
+  // Newest first; `date` is YYYY-MM so string order is date order.
   eleventyConfig.addFilter("byYear", (photos, year) =>
-    year ? photos.filter((p) => p.year === year) : photos
+    (year ? photos.filter((p) => p.year === year) : [...photos]).sort((a, b) =>
+      b.date.localeCompare(a.date)
+    )
   );
 
   eleventyConfig.addFilter("take", (array, n) => (array || []).slice(0, n));
