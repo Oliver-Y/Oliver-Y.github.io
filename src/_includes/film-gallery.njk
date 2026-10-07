@@ -1,0 +1,27 @@
+{%- set photos = film | byYear(year) -%}
+<div class="sheet">
+  <h2>
+    <span>Film</span>
+    <span class="count">{{ photos | length }}</span>
+  </h2>
+
+  <nav class="film-years">
+    <a href="{{ '/film/' | url }}"{% if not year %} class="on" aria-current="page"{% endif %}>all</a>
+    {%- for y in filmYears %}
+    <a href="{{ ('/film/' + y + '/') | url }}"{% if year == y %} class="on" aria-current="page"{% endif %}>{{ y }}</a>
+    {%- endfor %}
+  </nav>
+
+  <ul class="film">
+    {%- for photo in photos %}
+    <li>
+      <figure>
+        <img src="{{ ('/img/film/' + photo.file) | url }}" alt="{{ photo.alt or photo.place }}" loading="lazy"{% if photo.width %} width="{{ photo.width }}" height="{{ photo.height }}"{% endif %}>
+        <figcaption>{{ photo.place }} · {{ photo.when }}</figcaption>
+      </figure>
+    </li>
+    {%- else %}
+    <li class="empty">Nothing here yet.</li>
+    {%- endfor %}
+  </ul>
+</div>

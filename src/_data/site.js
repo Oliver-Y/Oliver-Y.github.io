@@ -25,6 +25,7 @@ module.exports = {
     { key: "gadgets", label: "gadgets", title: "Gadgets & Gizmos" },
     { key: "quotes", label: "quotes", title: "Quotes" },
     { key: "writing", label: "writing", title: "Writing & Recipes" },
+    { key: "film", label: "film", title: "Film" },
   ],
   links: {
     github: "https://github.com/Oliver-Y",

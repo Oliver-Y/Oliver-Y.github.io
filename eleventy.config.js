@@ -43,6 +43,10 @@ module.exports = function (eleventyConfig) {
     return age >= 0 && age <= FRESH_DAYS;
   });
 
+  eleventyConfig.addFilter("byYear", (photos, year) =>
+    year ? photos.filter((p) => p.year === year) : photos
+  );
+
   eleventyConfig.addFilter("take", (array, n) => (array || []).slice(0, n));
 
   // Human label for the section a post lives in.

@@ -1,0 +1,11 @@
+---
+layout: base.njk
+section: film
+pagination:
+  data: filmYears
+  size: 1
+  alias: year
+permalink: "/film/{{ year }}/"
+eleventyExcludeFromCollections: true
+---
+{% include "film-gallery.njk" %}
