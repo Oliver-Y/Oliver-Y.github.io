@@ -20,10 +20,11 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("gadgets", (c) => live(c, "gadgets"));
   eleventyConfig.addCollection("quotes", (c) => live(c, "quotes"));
   eleventyConfig.addCollection("notes", (c) => live(c, "notes"));
+  eleventyConfig.addCollection("writing", (c) => live(c, "writing"));
 
   // Everything across all three sections, newest first — used by the feed.
   eleventyConfig.addCollection("everything", (c) =>
-    ["gadgets", "quotes", "notes"]
+    ["gadgets", "quotes", "notes", "writing"]
       .flatMap((tag) => live(c, tag))
       .sort((a, b) => b.date - a.date)
   );
@@ -48,6 +49,7 @@ module.exports = function (eleventyConfig) {
     gadgets: "Gadgets & Gizmos",
     kitchen: "Kitchen & Quotes",
     essays: "Essays",
+    writing: "Writing & Recipes",
   };
   eleventyConfig.addFilter("sectionTitle", (key) => SECTION_TITLES[key] || key);
 

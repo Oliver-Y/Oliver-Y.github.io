@@ -15,7 +15,7 @@ layout: base.njk
     <span class="meta">
       {{ post.date | date }}{% if post.data.kind %} · {{ post.data.kind }}{% endif %}
     </span>
-    <span class="t"><a href="{{ post.url | url }}">{{ post.data.title }}</a></span>
+    <span class="t"><a href="{{ post.data.link or (post.url | url) }}">{{ post.data.title }}</a>{% if post.data.link %} ↗{% endif %}</span>
     {%- if post.data.blurb %}<span class="s">{{ post.data.blurb }}</span>{% endif %}
   </div>
   {%- else %}

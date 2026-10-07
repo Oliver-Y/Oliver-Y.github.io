@@ -7,9 +7,9 @@ section: home
     <div class="photo mono">PHOTO</div>
   </div>
   <div>
-    <p class="lede">Hi! I'm Oliver. I love gizmos and gadgets, I love to read (especially American history), I love low-level programming.</p>
-    <p>These topics intersect in expected and unexpected ways but they take up a big portion of my head space so I felt I ought to create a place for some of these thoughts to settle. For me, writing forces me to articulate these thoughts and re-examine the obvious questions which makes learning feel more concrete. </p>
-    <p>Starting this blog up in hopes of cultivating a habit of life-long learning that is made more intentional and rigorous through writing.</p>
+    <p class="lede">Hi! I'm Oliver. I love gadgets, I love to read American history, and I love low-level programming.</p>
+    <p>These topics take up a lot of my head space, so I wanted a place for those thoughts to settle. Writing forces me to articulate them and re-examine the obvious questions, which makes learning feel more concrete.</p>
+    <p>I'm starting this blog to build a habit of learning, made more intentional through writing.</p>
     <div class="rail mono">
       <a href="{{ site.links.github }}">github</a>
       <a href="{{ site.links.email }}">email</a>
@@ -25,7 +25,7 @@ section: home
     <li>
       <span class="when">{{ post.date | date }}</span>
       <span>
-        <a href="{{ post.url | url }}">{{ post.data.title }}</a>
+        <a href="{{ post.data.link or (post.url | url) }}">{{ post.data.title }}</a>
         <span class="where">— {{ post.data.section | sectionTitle }}</span>
       </span>
     </li>
