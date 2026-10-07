@@ -5,13 +5,9 @@ section: about
 permalink: /about/
 ---
 
-Placeholder. A few paragraphs about who you are, what you work on, and why this
-site exists. This page has room for more than the one-liner on the home page.
+## Get in touch
 
-The three sections:
-
-- **Technical Notes** — placeholder description.
-- **Gadgets & Gizmos** — placeholder description.
-- **Quotes** — placeholder description.
-
-How to get in touch goes here.
+- Email: [olivermax700@gmail.com](mailto:olivermax700@gmail.com)
+- LinkedIn: [oliver-ye](https://www.linkedin.com/in/oliver-ye-50018a16a/)
+- GitHub: [Oliver-Y](https://github.com/Oliver-Y)
+- Resume: [PDF](/files/resume.pdf)

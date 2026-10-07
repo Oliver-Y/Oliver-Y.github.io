@@ -28,6 +28,7 @@ module.exports = {
   ],
   links: {
     github: "https://github.com/Oliver-Y",
-    email: "mailto:oliver.ye@applied.co", // swap for a personal address
+    email: "mailto:olivermax700@gmail.com",
+    linkedin: "https://www.linkedin.com/in/oliver-ye-50018a16a/",
   },
 };
