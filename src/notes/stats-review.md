@@ -492,15 +492,65 @@ $$\hat\theta = \arg\min_\theta \frac{1}{N}\sum_{n=1}^{N} \ell(y_n, \theta; x_n)$
 
 MLE is the special case $\ell = -\log p(y_n \mid x_n, \theta)$.
 
-**Method of moments:** a simpler alternative for when solving
-$\nabla\mathrm{NLL}(\theta) = 0$ has no closed form (e.g. mixture models),
-usually less statistically efficient than MLE.
+**Method of moments:** an alternative to solving $\nabla\mathrm{NLL}(\theta) = 0$
+for when that has no closed form (e.g. mixture models).
 
-- Theoretical moment of the distribution = empirical moment of the
-  distribution, solve a set of $K$ simultaneous equations.
-- The theoretical moments are given by $\mu_k = \mathbb{E}[Y^k]$, for $k = 1, \dots, K$.
-- The empirical moments are given by $\hat\mu_k = \frac{1}{N}\sum_{n=1}^{N} y_n^k$.
-- (Work through this)
+- A moment is just the average of $y^k$, for $k = 1, \dots, K$.
+  - Theoretical: averaged under the model, $\mu_k(\theta) = \mathbb{E}[Y^k]$.
+    A formula in $\theta$.
+  - Empirical: averaged over the data,
+    $\hat\mu_k = \frac{1}{N}\sum_{n=1}^{N} y_n^k$. A number.
+- Set them equal for $k = 1, \dots, K$, where $K = \dim(\theta)$, and solve the
+  $K$ equations.
+
+The idea: instead of starting from the distribution and chasing critical points
+of the NLL, we first boil the data down to a few summary numbers, the averages
+of some function $f(y)$. We assume a distribution, which tells us what those
+same averages should be as formulas in $\theta$, and then back out $\theta$ by
+matching the two. Any $f$ works as long as we can compute it from the data and
+the model predicts it. Powers of $y$ are just the convenient default. It's
+usually easier than the NLL route, but it can be less efficient.
+
+**Example #1: Univariate Gaussian.** $K = 2$ ($\mu$ and $\sigma^2$). Using
+$\sigma^2 = \mathbb{E}[Y^2] - \mathbb{E}[Y]^2$:
+
+$$\mathbb{E}[Y] = \mu = \bar y, \qquad \mathbb{E}[Y^2] = \sigma^2 + \mu^2 = \overline{y^2}
+\quad\Longrightarrow\quad \hat\mu = \bar y, \quad \hat\sigma^2 = \overline{y^2} - \bar y^2$$
+
+Same as the MLE above, since the Gaussian only depends on $y$ and $y^2$. The
+NLL route is just as easy here, this is only to see the recipe.
+
+**Example #2: Uniform distribution, where MoM breaks.** $Y \sim \mathrm{Unif}(\theta_1, \theta_2)$, so
+$K = 2$ again. The first two moments are
+
+$$\mu_1 = \tfrac{1}{2}(\theta_1 + \theta_2), \qquad \mu_2 = \tfrac{1}{3}(\theta_1^2 + \theta_1\theta_2 + \theta_2^2)$$
+
+Equating to the empirical moments and solving gives
+
+$$\hat\theta_1 = \hat\mu_1 - \sqrt{3(\hat\mu_2 - \hat\mu_1^2)}, \qquad \hat\theta_2 = 2\hat\mu_1 - \hat\theta_1$$
+
+- This can give invalid answers. Take $D = \{0, 0, 0, 0, 1\}$: $\hat\mu_1 = \hat\mu_2 = 1/5$,
+  so $\hat\theta_1 = -0.493$ and $\hat\theta_2 = 0.893$. But with $\theta_2 = 0.893$
+  we could never have generated the sample $1$.
+- MLE: the likelihood is $(\theta_2 - \theta_1)^{-N}$ as long as every point
+  falls inside $[\theta_1, \theta_2]$, so it keeps growing as the interval
+  shrinks. The best interval is the tightest one around the data,
+  $\hat\theta_1 = \min_n y_n = 0$ and $\hat\theta_2 = \max_n y_n = 1$.
+- MoM only matches the moments we picked, so it can miss information the MLE
+  uses (here, that the data can't fall outside the interval). That's why it's
+  usually less efficient than MLE.
+- MoM isn't an approximation of MLE, it's a parallel recipe aimed at the same
+  target, the true $\theta$. MLE asks which $\theta$ makes the data most
+  likely. MoM asks which $\theta$ predicts the same averages as the data. As $N$
+  grows the data's averages get closer to the model's true averages, so MoM
+  lands on the true $\theta$ too, just with more noise along the way. When the
+  moments are all the density depends on (Gaussian), the two recipes are the
+  same estimator.
+- Why MoM is still useful: writing down the expectation of a power of $y$ is often
+  easier than differentiating the NLL. The moment equations are simple
+  algebra, while the NLL gradient can be a nonlinear mess with no closed form.
+  We trade some efficiency for an equation we can solve, and the answer is a
+  cheap starting point for iterative MLE.
 
 #### Regularization and MAP
 
