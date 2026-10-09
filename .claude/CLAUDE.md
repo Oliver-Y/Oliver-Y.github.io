@@ -11,8 +11,3 @@ Personal site: Eleventy 3, input `src/`, output `_site/`. Deployed to GitHub Pag
   private out of it — `.claude/` included.
 - Commit identity is repo-local (`Oliver-Y <Oliver-Y@users.noreply.github.com>`). Never commit
   with a work email.
-
-## In-progress work
-
-- `oye_add_stats-notes`: the "Stats review" post. Read
-  `.claude/checkpoints/checkpoint-stats-review-post.md` before working on it.
