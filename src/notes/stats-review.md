@@ -5,8 +5,8 @@ blurb: Review of Ch 2-4 of Probabilistic Machine Learning — random variables, 
 ---
 
 I've always wished I had a more intuitive understanding of stats. While it has a
-lot of practical applications, it also feels like a subject that would shape my
-worldview: specifically, how we choose to describe and confront uncertainty in an
+lot of practical applications, it also feels like a subject that would inform a
+worldview, specifically how we choose to describe and confront uncertainty in an
 increasingly complex world. So here are some of my notes.
 
 ## 0. RV — Random variables
