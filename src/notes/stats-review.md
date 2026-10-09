@@ -4,13 +4,10 @@ date: 2026-09-24
 blurb: Review of Ch 2-4 of Probabilistic Machine Learning — random variables, the distribution catalogue, Gaussians, and Bayesian inference.
 ---
 
-I wish I took the time to understand stats in college. It's 
-one of those subjects that's important to learn and internalize. At
-the root of it (at least in my opinion) is it provides a way to quantify
-uncertainty. It has heavy applications in all these ML papers I read but also,
-feels like it'd be a useful tool in confronting a world that feels incredibly
-more complex by the second. So here's my, verbose and probably imprecise notes
-on learning/re-learning the foundations.
+I've always wished I had a more intuitive understanding of stats. While it has a
+lot of practical applications, it also feels like a subject that would shape my
+worldview: specifically, how we choose to describe and confront uncertainty in an
+increasingly complex world. So here are some of my notes.
 
 ## 0. RV — Random variables
 
@@ -578,15 +575,65 @@ rescales $\lambda$), with $\ell$ the NLL. This reduces down to MAP:
 
 $$\hat\theta = \arg\max_\theta \log p(\theta \mid D) = \arg\max_\theta \left[\log p(D \mid \theta) + \log p(\theta) - \text{const}\right]$$
 
-**Example #2: Multivariate MAP Gaussian.** Including the log of some prior:
+**Example #2: Multivariate MAP Gaussian.** Including the log of some prior on
+$\Sigma$. To keep it simple, assume the mean is known and equal to $0$.
 
-- Inverse Wishart prior (work through this).
+- Inverse Wishart prior: a prior over covariance matrices. The idea is to treat
+  the prior as imaginary data we've already seen, so updating is just pooling the
+  imaginary data with the real data.
+  - $\nu_0$ sets how many imaginary points we pretend to have seen; the MAP
+    counts them as $\nu_0 + D + 1$. More means a stronger prior.
+  - $S_0$ is the running total of $y y^\top$ over those imaginary points. For
+    real data the total is $S = \sum_{n=1}^{N} y_n y_n^\top = N\hat\Sigma_{\mathrm{mle}}$,
+    which is just the MLE covariance before dividing by $N$.
+  - Pool them: $\nu_N = \nu_0 + N$ points with total $S_N = S_0 + S$.
+- MAP is the mode of the posterior, and it comes out as a weighted average of the
+  prior's guess $\Sigma_0$ and the MLE:
 
-$$\hat\Sigma_{\mathrm{map}} = \lambda \Sigma_0 + (1 - \lambda)\hat\Sigma_{\mathrm{mle}}$$
+$$\begin{aligned}
+\hat\Sigma_{\mathrm{map}} &= \frac{S_0 + S}{\nu_0 + N + D + 1} = \lambda \Sigma_0 + (1 - \lambda)\hat\Sigma_{\mathrm{mle}} \\
+\Sigma_0 &= \frac{S_0}{\nu_0 + D + 1}, \qquad \lambda = \frac{\nu_0 + D + 1}{\nu_0 + N + D + 1}
+\end{aligned}$$
 
 - This $\lambda \in [0, 1]$ is how much weight the prior gets (it grows with
   prior strength and shrinks as $N$ grows), not the regularization $\lambda$
   above.
+
+**Toy example.** $D = 2$, one data point $y = (2, 2)$, and a prior that guesses
+$\Sigma_0 = I$ with $\nu_0 = 3$. Then $\lambda = 6/7$.
+
+$$\hat\Sigma_{\mathrm{mle}} = y y^\top = \begin{pmatrix} 4 & 4 \\ 4 & 4 \end{pmatrix}, \qquad
+\hat\Sigma_{\mathrm{map}} = \tfrac{6}{7}\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} + \tfrac{1}{7}\begin{pmatrix} 4 & 4 \\ 4 & 4 \end{pmatrix}
+= \begin{pmatrix} 1.43 & 0.57 \\ 0.57 & 1.43 \end{pmatrix}$$
+
+The MLE says the two dimensions move perfectly together (correlation $1$) and
+can't be inverted. MAP pulls every entry toward the prior's, so the correlation
+drops to $0.57 / 1.43 = 0.4$. That flattens the line for predicting $y_2$ from
+$y_1$, so one data point doesn't convince us the dimensions are tied together.
+
+{% include "figures/shrinkage-identity.html" %}
+
+A common choice is $\Sigma_0 = \mathrm{diag}(\hat\Sigma_{\mathrm{mle}})$: keep each
+variance as the MLE has it and shrink only the correlations.
+
+$$\hat\Sigma_{\mathrm{map}}(i, j) = \begin{cases} \hat\Sigma_{\mathrm{mle}}(i, j) & i = j \\ (1 - \lambda)\,\hat\Sigma_{\mathrm{mle}}(i, j) & \text{otherwise} \end{cases}$$
+
+Each variance is well estimated from few points, while the many correlations are
+noisy, so we trust the variances and pull the correlations toward $0$. It also
+means we never have to guess the scale of each variable. This is called
+shrinkage estimation: we shrink the noisy MLE toward a simpler target, and
+$\lambda$ sets how far.
+
+**Toy example, diagonal prior.** Three points,
+$y = (2, 2.5),\ (-1, -0.5),\ (1, 1.5)$, with $\nu_0 = 3$, so $\lambda = 6/9 = 2/3$.
+
+$$\hat\Sigma_{\mathrm{mle}} = \begin{pmatrix} 2 & 2.33 \\ 2.33 & 2.92 \end{pmatrix}, \qquad
+\hat\Sigma_{\mathrm{map}} = \begin{pmatrix} 2 & 0.78 \\ 0.78 & 2.92 \end{pmatrix}$$
+
+The diagonal is untouched and the off-diagonal is cut to a third. The correlation
+drops from $0.97$ to $0.32$ and the prediction slope from $1.17$ to $0.39$.
+
+{% include "figures/shrinkage-diag.html" %}
 
 **Example #3: Weight decay.** L2 regularization, penalizing big weight vectors.
 
@@ -626,29 +673,26 @@ Second, average $p(y \mid x, \theta)$ over $\theta$, weighted by $p(\theta \mid 
 
 $$p(y \mid x, D) = \int p(y \mid x, \theta)\, p(\theta \mid D)\, d\theta$$
 
+This is the step that captures epistemic uncertainty: every plausible $\theta$ gets
+a vote. Usually we collapse $p(\theta \mid D)$ to a single point estimate.
+
 Plugging in a point estimate is the same integral with the posterior replaced by
-a spike, $p(\theta \mid D) \approx \delta(\theta - \hat\theta)$:
+a spike, $p(\theta \mid D) \approx \delta(\theta - \hat\theta)$, which picks out one $\theta$:
+
+$$\int p(y \mid x, \theta)\, \delta(\theta - \hat\theta)\, d\theta = p(y \mid x, \hat\theta)$$
 
 $$\begin{aligned}
-\text{MAP:} \quad & p(y \mid x, D) \approx p(y \mid x, \hat\theta_{\text{MAP}}), \quad \hat\theta_{\text{MAP}} = \arg\max_\theta\, p(\theta \mid D) \\
-\text{Posterior mean:} \quad & p(y \mid x, D) \approx p(y \mid x, \mathbb{E}[\theta \mid D]) \\
-\text{Bayesian:} \quad & p(y \mid x, D) = \int p(y \mid x, \theta)\, p(\theta \mid D)\, d\theta
+\text{MAP:} \quad & p(y \mid x, D) \approx p\big(y \mid x, \arg\max_\theta\, p(\theta \mid D)\big) \\
+\text{Posterior mean:} \quad & p(y \mid x, D) \approx p(y \mid x, \mathbb{E}[\theta \mid D])
 \end{aligned}$$
 
-MLE is the MAP line with a flat prior, $\hat\theta_{\text{MLE}} = \arg\max_\theta\, p(D \mid \theta)$.
-The first two are $p(y \mid x, \text{one }\theta)$; the last is $\mathbb{E}_{p(\theta \mid D)}[\,p(y \mid x, \theta)\,]$.
+> Note: MLE is the MAP line with a flat prior, $\hat\theta_{\text{MLE}} = \arg\max_\theta\, p(D \mid \theta)$.
 
-- At prediction time each $\theta$ makes its own prediction $p(y \mid x, \theta)$;
-  the posterior predictive averages these, weighting each $\theta$ by how
-  plausible it is after seeing $D$, $p(\theta \mid D)$.
-
-**Example #1: Gaussian-Gaussian model.** It's the same analysis as we did above
-about how we distribute the mean + variance of a gaussian based on its strength
-(variance); precision format is easier to reason through. Also this is the
-"conjugate prior" idea: a Gaussian prior on the mean of a Gaussian likelihood
-(known variance) gives a Gaussian posterior, the same family as the prior. Here
-$\kappa = 1/\sigma^2$ is the known noise precision, and $\breve\lambda$,
-$\breve m$ are the prior precision and mean.
+**Example #1: Gaussian-Gaussian model.** Gaussian prior on the mean $\theta$,
+Gaussian likelihood with known noise, so the posterior is a Gaussian too (the
+"conjugate prior" idea: same family in, same family out). $\kappa = 1/\sigma^2$
+is the known noise precision, and $\breve\lambda$, $\breve m$ are the prior
+precision and mean.
 
 $$\boxed{\begin{aligned}
 \lambda_N &= \breve\lambda + N\kappa \\
@@ -656,32 +700,71 @@ m_N &= \frac{N\kappa\,\bar y + \breve\lambda\,\breve m}{\lambda_N}
  = \frac{N\kappa}{N\kappa + \breve\lambda}\,\bar y + \frac{\breve\lambda}{N\kappa + \breve\lambda}\,\breve m
 \end{aligned}}$$
 
+How it's maintained: the posterior after $N$ points is the prior for point
+$N+1$. It stays a Gaussian, so we just keep two running totals and fold in each
+new $y$ (old $\lambda$ on the right):
+
+$$\lambda \leftarrow \lambda + \kappa, \qquad m \leftarrow \frac{\kappa y + \lambda m}{\lambda + \kappa}$$
+
+**Toy example.** Noise variance 4 ($\kappa = 0.25$), prior $\mathcal{N}(20, 2)$
+($\breve\lambda = 0.5$, $\breve m = 20$), data $22, 26, 24, 24$. Fold in one point at a time:
+
+| after | $\lambda$ | $m$ |
+|---|---|---|
+| prior | 0.50 | 20.00 |
+| $y=22$ | 0.75 | 20.67 |
+| $y=26$ | 1.00 | 22.00 |
+| $y=24$ | 1.25 | 22.40 |
+| $y=24$ | 1.50 | 22.67 |
+
+All four at once gives the same answer: $\lambda_N = 0.5 + 4(0.25) = 1.5$ and
+$m_N = \tfrac13(20) + \tfrac23(24) = 22.67$, since the prior holds $0.5$ out of $1.5$ of
+the total precision. The posterior is $\mathcal{N}(22.67,\ 0.67)$, std $0.82$ down
+from $1.41$: the center moved toward the data and the curve narrowed.
+
+**What $p(y \mid D)$ means.** $y$ is the next observation, not yet seen. It's a
+draw of $\theta$ plus noise, so the variances add:
+
 $$p(y \mid D) = \int \mathcal{N}(y \mid \theta, 1/\kappa)\,\mathcal{N}(\theta \mid m_N, 1/\lambda_N)\, d\theta
 = \mathcal{N}\!\left(y \,\middle|\, m_N,\ \tfrac{1}{\kappa} + \tfrac{1}{\lambda_N}\right)$$
 
-- $(m_N, \lambda_N)$ is not a point estimate. It is the whole posterior: a
-  bell curve over what $\theta$ could be, centered at $m_N$, with variance
-  $1/\lambda_N$. More data slides it toward $\bar y$ and narrows it.
-- How it's maintained: the posterior after $N$ points is the prior for point
-  $N+1$. Because the posterior is still a Gaussian (conjugacy), the update is
-  closed under itself, so we only carry two numbers and fold in each new $y$:
-  $\lambda \leftarrow \lambda + \kappa$, $\; m \leftarrow \frac{\kappa y + \lambda m}{\lambda + \kappa}$
-  (using the old $\lambda$ on the right). One at a time or all $N$ at once gives
-  the same $(m_N, \lambda_N)$.
-- The difference from MLE/MAP is the last step. They plug in one $\hat\theta$
-  and predict with variance $1/\kappa$ (aleatoric). Here we average over the
-  whole curve, so the predictive variance also carries $1/\lambda_N$, our
-  uncertainty about $\theta$ (epistemic).
-- Posterior variance gives a confidence in the estimate of $\mu$. MLE gives
-  $\hat\sigma^2$ (the noise in one $y$), but the point estimate $\hat\mu$
-  carries no uncertainty on its own; the posterior hands you one directly (a
-  separate sampling-distribution argument gives the same $s/\sqrt{N}$ here). The standard error of the mean is $\text{se}(\mu) = \sqrt{\mathbb{V}[\mu \mid D]}$.
-  With an uninformative prior ($\breve\lambda = 0$) the posterior mean equals the
-  MLE, $m_N = \bar y$, and approximating $\sigma^2$ by the sample variance $s^2$
-  gives $\lambda_N = N/s^2$:
+> Note: $\kappa$ is fixed: $1/\kappa$ is aleatoric noise, irreducible by data.
+> $\lambda_N$ grows with $N$: $1/\lambda_N$ is epistemic uncertainty, reducible by data.
 
-$$\text{se}(\mu) = \frac{1}{\sqrt{\lambda_N}} = \frac{s}{\sqrt{N}}
-\qquad\Rightarrow\qquad I_{.95}(\mu \mid D) \approx \bar y \pm 2\,\frac{s}{\sqrt{N}}$$
+{% include "figures/gauss-predictive.html" %}
 
-  So the uncertainty in $\mu$ shrinks at rate $1/\sqrt{N}$, while the predictive
-  variance never drops below the noise $s^2$.
+With the toy numbers:
+
+$$\begin{aligned}
+p(y \mid D) &= \int \mathcal{N}\big(y \mid \theta,\ \underbrace{4}_{1/\kappa}\big)\;
+\mathcal{N}\big(\theta \mid \underbrace{22.67}_{m_N},\ \underbrace{0.67}_{1/\lambda_N}\big)\, d\theta \\[6pt]
+&= \mathcal{N}\big(y \mid 22.67,\ \underbrace{4}_{\text{noise}} + \underbrace{0.67}_{\text{unsure about } \theta}\big)
+= \mathcal{N}(y \mid 22.67,\ 4.67)
+\end{aligned}$$
+
+A MAP plug-in would say variance $4$,
+overconfident since it pretends $\theta = 22.67$ exactly. With 100 more points the
+variance is $4.04$: the $1/\lambda_N$ part (epistemic) shrinks, the $1/\kappa$
+part (aleatoric noise) is a floor.
+$\lambda_N$ grows linearly with $N$, so the variance $1/\lambda_N$ shrinks like $1/N$
+and the std like $1/\sqrt{N}$: roughly, 4x the data halves our uncertainty about the
+mean ($0.82$ at $N=4$, $0.20$ at $N=100$).
+
+**Why the full predictive is wider.** In both cases we don't know the mean exactly.
+The plug-in ignores that and only counts the noise ($4$). The full predictive adds
+the uncertainty about the mean as extra variance ($+\,0.67$), so it's wider and
+more representative. This only covers the mean: the noise variance is given, so
+any uncertainty in it isn't captured.
+
+> Note: the toy example hands us the noise variance. Normally it's a second unknown
+> parameter, found the same way as the mean: solve the NLL for it (MLE). That gives
+> the average squared deviation from the sample mean, here $(4 + 4)/4 = 2$ for the
+> data $22, 26, 24, 24$. MAP does the same with a prior on the variance.
+
+**Try it.** Each draw picks a true mean from the prior, samples $N$ points from it, and compares both predictions to the true distribution. Run 2000 draws for the averages.
+
+{% include "figures/predictive-sim.html" %}
+
+> Note: as $N \to \infty$ the epistemic part $1/\lambda_N \to 0$, the posterior collapses
+> to a spike at the true $\theta^*$, and the plug-in and full predictive both converge to
+> the true distribution $\mathcal{N}(\theta^*, 1/\kappa)$, provided the model is right.

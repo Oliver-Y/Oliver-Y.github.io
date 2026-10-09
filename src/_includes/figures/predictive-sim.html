@@ -1,0 +1,97 @@
+{% raw %}
+<style>
+.pred-sim{margin:1.5rem 0;font-family:var(--sans)}
+.pred-sim .ps-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:10px;font-size:13px;color:var(--muted)}
+.pred-sim button{background:var(--ink);color:var(--ground);border:0;border-radius:4px;padding:6px 11px;font:inherit;cursor:pointer}
+.pred-sim button.ps-alt{background:transparent;color:var(--ink);border:1px solid var(--line-soft)}
+.pred-sim .ps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}
+.pred-sim .ps-card{background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;padding:6px 8px}
+.pred-sim .ps-card h4{font-size:12px;font-weight:600;margin:0 0 2px;color:var(--ink)}
+.pred-sim .ps-note{color:var(--muted);font-size:11.5px;min-height:30px}
+.pred-sim svg{width:100%;height:auto;display:block}
+.pred-sim svg text{font-family:var(--sans)}
+.pred-sim .ps-tally{margin-top:10px;font-size:13px;color:var(--muted)}
+.pred-sim .ps-tally b{color:var(--ink)}
+</style>
+<div class="pred-sim">
+<div class="ps-row"><button id="ps-draw">New draw</button><button id="ps-many" class="ps-alt">Run 2000 draws</button><button id="ps-reset" class="ps-alt">Reset tally</button><label>N = <span id="ps-nv">4</span> <input id="ps-n" type="range" min="1" max="30" value="4"></label><label><input id="ps-off" type="checkbox"> force true mean = 26 (prior is off)</label></div>
+<div class="ps-grid">
+<div class="ps-card"><h4>1. Truth</h4><svg id="ps-p1" viewBox="0 0 300 140"></svg><div class="ps-note" id="ps-n1"></div></div>
+<div class="ps-card"><h4>2. Posterior over &theta;</h4><svg id="ps-p2" viewBox="0 0 300 140"></svg><div class="ps-note" id="ps-n2"></div></div>
+<div class="ps-card"><h4>3. Plug-in (MAP) vs truth</h4><svg id="ps-p3" viewBox="0 0 300 140"></svg><div class="ps-note" id="ps-n3"></div></div>
+<div class="ps-card"><h4>4. Full predictive vs truth</h4><svg id="ps-p4" viewBox="0 0 300 140"></svg><div class="ps-note" id="ps-n4"></div></div>
+</div>
+<div class="ps-tally" id="ps-tally"></div>
+</div>
+
+<script>
+(function(){
+const KAPPA = 0.25, NOISE = 1 / KAPPA, LAM0 = 0.5, M0 = 20;
+const X0 = 8, X1 = 36, W = 300, H = 140, PAD = 8;
+const px = x => PAD + (x - X0) / (X1 - X0) * (W - 2 * PAD);
+const pdf = (x, m, v) => Math.exp(-((x - m) ** 2) / (2 * v)) / Math.sqrt(2 * Math.PI * v);
+const gauss = (m, sd) => { let u = 0, v = 0; while (!u) u = Math.random(); v = Math.random(); return m + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+const klTruth = (th, m, v) => 0.5 * (Math.log(v / NOISE) + (NOISE + (th - m) ** 2) / v - 1);
+const fmt = (x, d = 2) => x.toFixed(d);
+const xs = Array.from({length: 141}, (_, i) => X0 + (X1 - X0) * i / 140);
+
+function trial(N, off) {
+  const theta = off ? 26 : gauss(M0, 1 / Math.sqrt(LAM0));
+  const ys = Array.from({length: N}, () => gauss(theta, Math.sqrt(NOISE)));
+  const ybar = ys.reduce((a, b) => a + b, 0) / N;
+  const lam = LAM0 + N * KAPPA, m = (N * KAPPA * ybar + LAM0 * M0) / lam;
+  const vFull = NOISE + 1 / lam, vPlug = NOISE;
+  const yNext = gauss(theta, Math.sqrt(NOISE));
+  return {theta, ys, lam, m, vFull, vPlug, yNext,
+    klPlug: klTruth(theta, m, vPlug), klFull: klTruth(theta, m, vFull),
+    inPlug: Math.abs(yNext - m) < 1.96 * Math.sqrt(vPlug), inFull: Math.abs(yNext - m) < 1.96 * Math.sqrt(vFull)};
+}
+
+const path = (m, v, ymax, top = 6, h = H - 30) => 'M' + xs.map(x => `${px(x).toFixed(1)},${(top + h - pdf(x, m, v) / ymax * h).toFixed(1)}`).join(' L');
+const axis = () => {
+  let s = `<line x1="${PAD}" y1="${H-24}" x2="${W-PAD}" y2="${H-24}" stroke="var(--line-soft)"/>`;
+  for (const x of [10, 15, 20, 25, 30, 35]) s += `<text x="${px(x)}" y="${H-10}" text-anchor="middle" font-size="10" fill="var(--muted)">${x}</text>`;
+  return s;
+};
+const line = (x, color, w = 2, dash = '') => `<line x1="${px(x)}" y1="4" x2="${px(x)}" y2="${H-24}" stroke="${color}" stroke-width="${w}" stroke-dasharray="${dash}"/>`;
+const curve = (m, v, ymax, color, w, dash = '', fill = '') => `<path d="${path(m, v, ymax)}" fill="${fill ? 'none' : 'none'}" stroke="${color}" stroke-width="${w}" stroke-dasharray="${dash}"/>`;
+
+let tally = {n: 0, klPlug: 0, klFull: 0, fullBetter: 0, inPlug: 0, inFull: 0};
+
+function render(t) {
+  const yTruth = pdf(t.theta, t.theta, NOISE);
+  const dots = t.ys.map(y => `<circle cx="${px(y)}" cy="${H-30}" r="3.5" fill="var(--ink)" opacity=".7"/>`).join('');
+  document.getElementById('ps-p1').innerHTML = axis() + curve(t.theta, NOISE, yTruth, 'var(--ink)', 2) + line(t.theta, '#9b2c1f', 1.5, '3 3') + dots;
+  document.getElementById('ps-n1').textContent = `true mean ${fmt(t.theta)}, data mean ${fmt(t.ys.reduce((a,b)=>a+b,0)/t.ys.length)}`;
+  const ypost = pdf(t.m, t.m, 1 / t.lam), yprior = pdf(M0, M0, 1 / LAM0);
+  const ym = Math.max(ypost, yprior);
+  document.getElementById('ps-p2').innerHTML = axis() + curve(M0, 1 / LAM0, ym, 'var(--muted)', 1.25, '3 3') + curve(t.m, 1 / t.lam, ym, 'var(--ink)', 2) + line(t.theta, '#9b2c1f', 1.5, '3 3');
+  const inside = Math.abs(t.theta - t.m) < 1.96 / Math.sqrt(t.lam);
+  document.getElementById('ps-n2').textContent = `posterior N(${fmt(t.m)}, ${fmt(1 / t.lam)}); red = true mean, ${inside ? 'inside' : 'OUTSIDE'} the 95% band. Dashed = prior.`;
+  for (const [id, v, kl, nid] of [['ps-p3', t.vPlug, t.klPlug, 'ps-n3'], ['ps-p4', t.vFull, t.klFull, 'ps-n4']]) {
+    const ymax = Math.max(yTruth, pdf(t.m, t.m, v));
+    document.getElementById(id).innerHTML = axis() + curve(t.theta, NOISE, ymax, 'var(--ink)', 1.5, '4 3') + curve(t.m, v, ymax, 'var(--amber-link)', 2.25) + `<circle cx="${px(t.yNext)}" cy="${H-30}" r="3.5" fill="#9b2c1f"/>`;
+    document.getElementById(nid).textContent = `N(${fmt(t.m)}, ${fmt(v)})   KL to truth ${fmt(kl, 4)}`;
+  }
+}
+
+function renderTally() {
+  const k = tally.n || 1;
+  document.getElementById('ps-tally').innerHTML = tally.n === 0 ? 'No draws yet.' :
+    `<b>${tally.n}</b> draws. Mean KL to truth: plug-in <b>${fmt(tally.klPlug / k, 4)}</b>, full <b>${fmt(tally.klFull / k, 4)}</b>. ` +
+    `Full closer to truth in <b>${fmt(100 * tally.fullBetter / k, 1)}%</b> of draws. ` +
+    `95% interval coverage of a fresh y: plug-in <b>${fmt(100 * tally.inPlug / k, 1)}%</b>, full <b>${fmt(100 * tally.inFull / k, 1)}%</b>.`;
+}
+
+const add = t => { tally.n++; tally.klPlug += t.klPlug; tally.klFull += t.klFull; tally.fullBetter += t.klFull < t.klPlug; tally.inPlug += t.inPlug; tally.inFull += t.inFull; };
+const N = () => +document.getElementById('ps-n').value, OFF = () => document.getElementById('ps-off').checked;
+const reset = () => { tally = {n: 0, klPlug: 0, klFull: 0, fullBetter: 0, inPlug: 0, inFull: 0}; renderTally(); };
+document.getElementById('ps-draw').onclick = () => { const t = trial(N(), OFF()); add(t); render(t); renderTally(); };
+document.getElementById('ps-many').onclick = () => { let t; for (let i = 0; i < 2000; i++) { t = trial(N(), OFF()); add(t); } render(t); renderTally(); };
+document.getElementById('ps-reset').onclick = reset;
+document.getElementById('ps-n').oninput = e => { document.getElementById('ps-nv').textContent = e.target.value; reset(); };
+document.getElementById('ps-off').onchange = reset;
+document.getElementById('ps-draw').click();
+})();
+</script>
+{% endraw %}
