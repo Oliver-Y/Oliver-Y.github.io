@@ -314,6 +314,8 @@ a.inline:hover { border-color: var(--amber); }
 }
 
 .prose img { max-width: 100%; height: auto; }
+.prose figure.diagram { margin: 1.5rem 0; }
+.prose figure.diagram figcaption { margin-top: 0.5rem; font-size: 0.875em; color: var(--muted); }
 
 .prose code {
   font-family: var(--mono);
