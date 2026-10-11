@@ -25,7 +25,6 @@
         {%- for s in site.sections %}
         <a href="{{ ('/' + s.key + '/') | url }}"{% if section == s.key %} class="on" aria-current="page"{% endif %}>{{ s.label }}</a>
         {%- endfor %}
-        <a href="{{ '/about/' | url }}"{% if section == "about" %} class="on" aria-current="page"{% endif %}>about</a>
       </nav>
     </div>
 

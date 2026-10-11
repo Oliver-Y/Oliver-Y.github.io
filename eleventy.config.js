@@ -2,7 +2,6 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/css");
   eleventyConfig.addPassthroughCopy("src/img");
   eleventyConfig.addPassthroughCopy("src/fonts");
-  eleventyConfig.addPassthroughCopy("src/files");
   // Serve the KaTeX CSS/fonts from the same katex the markdown plugin renders with;
   // a version mismatch breaks layout (class names changed in 0.18).
   const path = require("path");
