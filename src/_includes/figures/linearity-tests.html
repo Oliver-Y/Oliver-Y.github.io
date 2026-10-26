@@ -1,0 +1,165 @@
+<figure class="diagram lin-tests" data-maps="{{ ltMaps or 'linear,homog,bend,shift' }}" data-test="{{ ltTest or 'add' }}" data-tests="{{ ltTests or 'add,hom' }}">
+<div class="lt-row lt-maps"></div>
+<div class="lt-row lt-tests"><span>Test:</span></div>
+<svg class="lt-svg" viewBox="0 0 540 290" role="img" aria-label="Two panels: an input grid with draggable vectors, and the same grid after a chosen map, with the additivity or homogeneity test drawn on top."></svg>
+<div class="lt-row" style="margin-top:6px"><label><span class="lt-klabel">strength</span> <input class="lt-k" type="range" min="0" max="1" step="0.02"></label><label class="lt-awrap">a <input class="lt-a" type="range" min="-2" max="2" step="0.05" value="1.6"> <span class="lt-av"></span></label></div>
+<div class="lt-read"></div>
+<figcaption>{{ ltCaption or 'Drag the vectors on the left.' }} Hollow circle = what linearity predicts, F(v) + F(w) or a·F(v); filled circle = what F actually does, F(v+w) or F(a·v). A red dash means the two disagree.</figcaption>
+</figure>
+{% raw %}
+<style>
+.lin-tests{margin:1.5rem 0;font-family:var(--sans)}
+.lin-tests .lt-row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--muted)}
+.lin-tests button{background:transparent;color:var(--ink);border:1px solid var(--line-soft);border-radius:4px;padding:5px 10px;font:inherit;cursor:pointer}
+.lin-tests button.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.lin-tests svg{width:100%;height:auto;display:block;touch-action:none;user-select:none}
+.lin-tests svg text{font-family:var(--sans)}
+.lin-tests input[type=range]{width:120px;vertical-align:middle}
+.lin-tests .lt-read{margin-top:4px;font-size:13px;color:var(--muted);min-height:3.2em}
+.lin-tests .lt-read b{color:var(--ink)}
+.lin-tests .lt-bad{color:#9B2C1F;font-weight:600}
+</style>
+<script>
+(function(){
+if (window.__linTestsInit) { window.__linTestsInit(); return; }
+const MAPS = {
+  linear: {name: 'Linear (shear)', k: .6, klabel: 'shear', F: (x, y, k) => [x + k*y, y],
+    note: 'Both tests pass for every v, w and a. Gridlines stay straight, parallel and evenly spaced, and the origin stays put.'},
+  homog: {name: 'Homogeneous only (twist)', k: .35, klabel: 'twist', F: (x, y, k) => {
+      const r2 = x*x + y*y;
+      if (r2 < 1e-12) return [0, 0];
+      const tx = (x*x*x - 3*x*y*y) / r2, ty = (3*x*x*y - y*y*y) / r2;
+      return [(1-k)*x + k*tx, (1-k)*y + k*ty];
+    },
+    note: 'F(z) = z³/|z|², blended with the identity by "twist". Every line through the origin maps to a line through the origin with even spacing, so homogeneity always passes. But the rest of the grid bends, and F(v+w) misses F(v) + F(w).'},
+  bend: {name: 'Neither: bend', k: 1, klabel: 'bend', F: (x, y, k) => [x, y + .25*k*x*x],
+    note: 'F(x, y) = (x, y + x²/4). Gridlines curve, and both tests fail: doubling v quadruples the bend instead of doubling it.'},
+  shift: {name: 'Neither: shift', k: 1, klabel: 'shift', F: (x, y, k) => [x + .6*k, y + .4*k],
+    note: 'F(p) = p + b. The grid stays straight, parallel and evenly spaced, just moved. But F(0) ≠ 0, so both tests fail: F(v) + F(w) counts the shift twice. Straight is not the same as linear.'},
+};
+const TESTS = {add: 'Additivity', hom: 'Homogeneity'};
+const BLUE = '#2F5D8A', AMB = '#6F5108', RED = '#9B2C1F';
+const S = 38, CY = 152, CXL = 135, CXR = 405, HALF = 125, LIM = 3.2;
+let count = 0;
+
+function init(root) {
+  root.dataset.ready = '1';
+  const id = 'lt' + (count++) + '-';
+  const q = s => root.querySelector(s);
+  const svg = q('.lt-svg'), kEl = q('.lt-k'), aEl = q('.lt-a');
+  const maps = root.dataset.maps.split(',').map(k => MAPS[k.trim()]);
+  const tests = root.dataset.tests.split(',').map(t => t.trim());
+  let map = maps[0], test = root.dataset.test, v = [1, .3], w = [.15, .95], dragging = null;
+
+  const F = p => map.F(p[0], p[1], +kEl.value);
+  const addv = (p, r) => [p[0]+r[0], p[1]+r[1]], mul = (p, s) => [p[0]*s, p[1]*s];
+  const dist = (p, r) => Math.hypot(p[0]-r[0], p[1]-r[1]);
+  const TL = ([x, y]) => [CXL + S*x, CY - S*y], TR = ([x, y]) => [CXR + S*x, CY - S*y];
+  const f = n => n.toFixed(1), fmt = p => `(${p[0].toFixed(2)}, ${p[1].toFixed(2)})`;
+  const pline = (pts, T, attrs) => `<polyline fill="none" points="${pts.map(p => T(p).map(f).join(',')).join(' ')}" ${attrs}/>`;
+  const seg = (a, b, T, attrs) => pline([a, b], T, attrs);
+  const arrow = (a, b, T, c) => seg(a, b, T, `stroke="${c}" stroke-width="2.2" marker-end="url(#${id}a-${c.slice(1)})"`);
+  const pt = (p, T, c, hollow, r = 4.5) => { const [x, y] = T(p); return `<circle cx="${f(x)}" cy="${f(y)}" r="${r}" fill="${hollow ? 'var(--ground)' : c}" stroke="${c}" stroke-width="${r > 3 ? 2 : 1.2}"/>`; };
+  const lab = (p, T, txt, c, dx = 7, dy = -7, anchor = 'start') => {
+    const [x, y] = T(p);
+    if (x + dx + 6.8*txt.length > (T === TL ? CXL : CXR) + HALF - 4) { anchor = 'end'; dx = -dx; }
+    return `<text x="${f(x+dx)}" y="${f(y+dy)}" text-anchor="${anchor}" font-size="12" font-weight="600" fill="${c}">${txt}</text>`;
+  };
+  const defs = '<defs>' + [BLUE, AMB].map(c => `<marker id="${id}a-${c.slice(1)}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join('') +
+    [['L', CXL], ['R', CXR]].map(([n, cx]) => `<clipPath id="${id}clip${n}"><rect x="${cx-HALF}" y="${CY-HALF}" width="${2*HALF}" height="${2*HALF}"/></clipPath>`).join('') + '</defs>';
+
+  function grid(T, mapped) {
+    let s = '';
+    const ts = Array.from({length: 61}, (_, i) => -LIM*1.6 + 3.2*LIM*i/60);
+    for (let i = -4; i <= 4; i++) {
+      const st = `stroke="var(--line)" stroke-width="${i ? .8 : 1.6}" stroke-opacity="${i ? .8 : 1}"`;
+      for (const line of [ts.map(t => [i, t]), ts.map(t => [t, i])]) s += pline(mapped ? line.map(F) : line, T, st);
+    }
+    return s;
+  }
+
+  function render() {
+    const a = +aEl.value;
+    q('.lt-av').textContent = a.toFixed(2);
+    let L = '', R = '', read = '';
+    if (test === 'add') {
+      const s = addv(v, w), Fv = F(v), Fw = F(w), Fs = F(s), pred = addv(Fv, Fw), d = dist(Fs, pred);
+      L += seg(v, s, TL, 'stroke="var(--muted)" stroke-dasharray="4 3"') + seg(w, s, TL, 'stroke="var(--muted)" stroke-dasharray="4 3"');
+      L += arrow([0, 0], v, TL, BLUE) + arrow([0, 0], w, TL, AMB) + pt(s, TL, 'var(--ink)') + lab(v, TL, 'v', BLUE) + lab(w, TL, 'w', AMB) + lab(s, TL, 'v+w', 'var(--ink)');
+      R += seg(Fv, pred, TR, 'stroke="var(--muted)" stroke-dasharray="4 3"') + seg(Fw, pred, TR, 'stroke="var(--muted)" stroke-dasharray="4 3"');
+      R += arrow([0, 0], Fv, TR, BLUE) + arrow([0, 0], Fw, TR, AMB) + lab(Fv, TR, 'F(v)', BLUE) + lab(Fw, TR, 'F(w)', AMB);
+      if (d > .02) R += seg(Fs, pred, TR, `stroke="${RED}" stroke-width="2" stroke-dasharray="3 3"`);
+      R += pt(pred, TR, 'var(--ink)', true) + pt(Fs, TR, 'var(--ink)') + lab(Fs, TR, 'F(v+w)', 'var(--ink)');
+      read = `<b>Additivity:</b> F(v+w) = ${fmt(Fs)} vs F(v) + F(w) = ${fmt(pred)} → ` + (d > .02 ? `<span class="lt-bad">off by ${d.toFixed(2)} ✗</span>` : '<b>equal ✓</b>');
+    } else {
+      const n = Math.hypot(...v) || 1, av = mul(v, a), Fv = F(v), Fav = F(av), pred = mul(Fv, a), d = dist(Fav, pred);
+      const ray = Array.from({length: 121}, (_, i) => mul(v, (-6 + 12*i/120) / n));
+      const ticks = [-3, -2, -1, 1, 2, 3].map(t => mul(v, t));
+      L += pline(ray, TL, 'stroke="var(--muted)" stroke-dasharray="4 3"') + ticks.map(p => pt(p, TL, 'var(--muted)', true, 2.5)).join('');
+      L += arrow([0, 0], v, TL, BLUE) + pt(av, TL, 'var(--ink)') + lab(v, TL, 'v', BLUE) + lab(av, TL, 'a·v', 'var(--ink)', 7, 14);
+      R += pline(ray.map(F), TR, 'stroke="var(--muted)" stroke-dasharray="4 3"') + ticks.map(p => pt(F(p), TR, 'var(--muted)', true, 2.5)).join('');
+      R += arrow([0, 0], Fv, TR, BLUE) + lab(Fv, TR, 'F(v)', BLUE);
+      if (d > .02) R += seg(Fav, pred, TR, `stroke="${RED}" stroke-width="2" stroke-dasharray="3 3"`);
+      R += pt(pred, TR, 'var(--ink)', true) + pt(Fav, TR, 'var(--ink)') + lab(Fav, TR, 'F(a·v)', 'var(--ink)');
+      read = `<b>Homogeneity:</b> F(a·v) = ${fmt(Fav)} vs a·F(v) = ${fmt(pred)} → ` + (d > .02 ? `<span class="lt-bad">off by ${d.toFixed(2)} ✗</span>` : '<b>equal ✓</b>');
+    }
+    const F0 = F([0, 0]);
+    if (dist(F0, [0, 0]) > .02) R += pt(F0, TR, RED) + lab(F0, TR, 'F(0)', RED, 7, 14);
+    const frame = cx => `<rect x="${cx-HALF}" y="${CY-HALF}" width="${2*HALF}" height="${2*HALF}" fill="var(--panel)" stroke="var(--line-soft)"/>`;
+    const origin = T => { const [x, y] = T([0, 0]); return `<circle cx="${x}" cy="${y}" r="2.5" fill="var(--ink)"/>`; };
+    svg.innerHTML = defs + frame(CXL) + frame(CXR) +
+      `<text x="${CXL}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Input</text>` +
+      `<text x="${CXR}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Output: F(input)</text>` +
+      `<text x="270" y="${CY+4}" text-anchor="middle" font-size="18" fill="var(--muted)">→</text>` +
+      `<g clip-path="url(#${id}clipL)">${grid(TL, false)}${origin(TL)}${L}</g>` +
+      `<g clip-path="url(#${id}clipR)">${grid(TR, true)}${origin(TR)}${R}</g>`;
+    q('.lt-read').innerHTML = read + '<br>' + map.note;
+    q('.lt-awrap').style.display = test === 'hom' ? '' : 'none';
+  }
+
+  function buttons(el, items, isOn, pick) {
+    if (items.length < 2) { el.style.display = 'none'; return; }
+    items.forEach(it => {
+      const b = document.createElement('button');
+      b.textContent = it.name;
+      b.onclick = () => { pick(it); el.querySelectorAll('button').forEach(x => x.className = x === b ? 'on' : ''); render(); };
+      if (isOn(it)) b.className = 'on';
+      el.appendChild(b);
+    });
+  }
+  const setMap = m => { map = m; kEl.value = m.k; q('.lt-klabel').textContent = m.klabel; };
+  buttons(q('.lt-maps'), maps, m => m === map, setMap);
+  buttons(q('.lt-tests'), tests.map(t => ({name: TESTS[t], t})), it => it.t === test, it => test = it.t);
+  setMap(map);
+  kEl.oninput = render;
+  aEl.oninput = render;
+
+  function toWorld(e) {
+    const p = svg.createSVGPoint();
+    p.x = e.clientX; p.y = e.clientY;
+    const r = p.matrixTransform(svg.getScreenCTM().inverse());
+    const c = x => Math.max(-3, Math.min(3, x));
+    return [c((r.x - CXL) / S), c((CY - r.y) / S), r];
+  }
+  svg.addEventListener('pointerdown', e => {
+    const [, , r] = toWorld(e);
+    const cands = test === 'add' ? [['v', v], ['w', w]] : [['v', v]];
+    let best = null, bd = 22;
+    for (const [n, p] of cands) { const [sx, sy] = TL(p), d = Math.hypot(sx - r.x, sy - r.y); if (d < bd) { bd = d; best = n; } }
+    if (best) { dragging = best; svg.setPointerCapture(e.pointerId); }
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const [x, y] = toWorld(e);
+    if (dragging === 'v') v = [x, y]; else w = [x, y];
+    render();
+  });
+  svg.addEventListener('pointerup', () => dragging = null);
+  svg.addEventListener('pointercancel', () => dragging = null);
+  render();
+}
+window.__linTestsInit = () => document.querySelectorAll('.lin-tests:not([data-ready])').forEach(init);
+window.__linTestsInit();
+})();
+</script>
+{% endraw %}

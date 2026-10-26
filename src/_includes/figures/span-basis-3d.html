@@ -1,0 +1,145 @@
+{% raw %}
+<style>
+.span3d{margin:1.5rem 0;font-family:var(--sans)}
+.span3d .s3-row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--muted)}
+.span3d button{background:transparent;color:var(--ink);border:1px solid var(--line-soft);border-radius:4px;padding:5px 10px;font:inherit;cursor:pointer}
+.span3d button.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.span3d svg{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;touch-action:none;cursor:grab;user-select:none}
+.span3d svg:active{cursor:grabbing}
+.span3d svg text{font-family:var(--sans)}
+.span3d input[type=range]{width:120px;vertical-align:middle}
+</style>
+<figure class="diagram span3d">
+<div class="s3-row" id="s3-presets"></div>
+<svg id="s3-svg" viewBox="0 0 540 340" role="img" aria-label="Interactive 3D view of vectors in R3 and their span: a line, a plane through the origin, or all of R3."></svg>
+<div class="s3-row" style="margin-top:8px"><label>c₁ <input id="s3-c1" type="range" min="-2" max="2" step="0.05" value="0.8"> <span id="s3-c1v"></span></label><label>c₂ <input id="s3-c2" type="range" min="-2" max="2" step="0.05" value="0.6"> <span id="s3-c2v"></span></label><label id="s3-c3w">c₃ <input id="s3-c3" type="range" min="-2" max="2" step="0.05" value="0.5"> <span id="s3-c3v"></span></label></div>
+</figure>
+
+<script>
+(function(){
+const PRESETS = [
+  {name: 'Two independent', vs: [[1.4, 0, .7], [0, 1.4, .7]]},
+  {name: 'Another basis', vs: [[1.4, 1.4, 1.4], [1.4, -1.4, 0]]},
+  {name: 'Parallel', vs: [[1.4, 0, .7], [-2.1, 0, -1.05]]},
+  {name: 'Third in plane', vs: [[1.4, 0, .7], [0, 1.4, .7], [1.4, 1.4, 1.4]]},
+  {name: 'Third off plane', vs: [[1.4, 0, .7], [0, 1.4, .7], [0, 0, 1.6]]},
+];
+const COLORS = ['#6F5108', '#2F5D8A', '#9B2C1F'];
+const R = 2.6, S = 56, CX = 270, CY = 178;
+const svg = document.getElementById('s3-svg');
+let cur = PRESETS[0], yaw = -0.65, pitch = 0.42;
+
+const dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+const add = (a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]];
+const mul = (a, k) => [a[0]*k, a[1]*k, a[2]*k];
+const norm = a => Math.sqrt(dot(a, a));
+function gs(vs) {
+  const out = [];
+  for (const v of vs) {
+    let w = v;
+    for (const u of out) w = add(w, mul(u, -dot(w, u)));
+    if (norm(w) > 1e-6) out.push(mul(w, 1 / norm(w)));
+  }
+  return out;
+}
+function proj([x, y, z]) {
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const x1 = x*cy - y*sy, y1 = x*sy + y*cy;
+  return [CX + S*x1, CY - S*(y1*sp + z*cp)];
+}
+const f = n => n.toFixed(1);
+const seg = (a, b, attrs) => { const [p, q] = [proj(a), proj(b)]; return `<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}" ${attrs}/>`; };
+const poly = (pts, attrs) => `<polygon points="${pts.map(p => proj(p).map(f).join(',')).join(' ')}" ${attrs}/>`;
+const label = (p, txt, color, dy = -6) => { const [x, y] = proj(p); return `<text x="${f(x + 6)}" y="${f(y + dy)}" font-size="13" font-weight="600" fill="${color}">${txt}</text>`; };
+const defs = '<defs>' + COLORS.map((c, i) => `<marker id="s3-arr${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join('') + '</defs>';
+
+function clip(p0, d) {
+  const A = d[0]*d[0] + d[1]*d[1], B = 2*(p0[0]*d[0] + p0[1]*d[1]), C = p0[0]**2 + p0[1]**2 - R*R;
+  const disc = B*B - 4*A*C;
+  if (disc <= 0) return null;
+  const s = Math.sqrt(disc);
+  return [(-B - s) / (2*A), (-B + s) / (2*A)];
+}
+function plane(v1, v2, faint) {
+  const [u, w] = gs([v1, v2]);
+  const to3 = ([X, Y]) => add(mul(u, X), mul(w, Y));
+  const a = [dot(v1, u), dot(v1, w)], b = [dot(v2, u), dot(v2, w)];
+  const disc = Array.from({length: 72}, (_, i) => to3([R*Math.cos(i*Math.PI/36), R*Math.sin(i*Math.PI/36)]));
+  let s = poly(disc, `fill="var(--amber)" fill-opacity="${faint ? .1 : .22}" stroke="var(--line)" stroke-width="1"`);
+  if (faint) return s;
+  for (const [step, dir] of [[b, a], [a, b]]) {
+    for (let k = -6; k <= 6; k++) {
+      const p0 = [step[0]*k, step[1]*k], t = clip(p0, dir);
+      if (!t) continue;
+      const P = t.map(tt => to3([p0[0] + dir[0]*tt, p0[1] + dir[1]*tt]));
+      s += seg(P[0], P[1], `stroke="var(--line)" stroke-width="${k ? .7 : 1.1}" stroke-opacity=".9"`);
+    }
+  }
+  return s;
+}
+function cube() {
+  const c = [-R, R], v = [];
+  for (const x of c) for (const y of c) for (const z of c) v.push([x, y, z]);
+  let s = '';
+  for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) {
+    const d = [0, 1, 2].filter(k => v[i][k] !== v[j][k]).length;
+    if (d === 1) s += seg(v[i], v[j], 'stroke="var(--line)" stroke-dasharray="3 4" stroke-width="1"');
+  }
+  return s;
+}
+
+function render() {
+  const vs = cur.vs, r = gs(vs).length;
+  const c1 = +document.getElementById('s3-c1').value, c2 = +document.getElementById('s3-c2').value;
+  document.getElementById('s3-c1v').textContent = c1.toFixed(2);
+  document.getElementById('s3-c2v').textContent = c2.toFixed(2);
+  const has3 = vs.length === 3, c3 = has3 ? +document.getElementById('s3-c3').value : 0;
+  document.getElementById('s3-c3w').style.display = has3 ? '' : 'none';
+  document.getElementById('s3-c3v').textContent = c3.toFixed(2);
+  let s = defs;
+  if (r === 3) s += `<rect width="540" height="340" fill="var(--amber)" fill-opacity=".07"/>` + cube();
+  ['x', 'y', 'z'].forEach((n, i) => {
+    const e = [0, 0, 0]; e[i] = R + .3;
+    s += seg(mul(e, -1), e, 'stroke="var(--muted)" stroke-width="1" stroke-opacity=".6"') + label(e, n, 'var(--muted)', 4).replace('font-weight="600"', '');
+  });
+  if (r >= 2) s += plane(vs[0], vs[1], r === 3);
+  if (r === 1) {
+    const d = mul(gs(vs)[0], R + .3);
+    s += seg(mul(d, -1), d, 'stroke="var(--amber-link)" stroke-width="3" stroke-opacity=".35"');
+  }
+  const p1 = mul(vs[0], c1), p2 = add(p1, mul(vs[1], c2)), p = has3 ? add(p2, mul(vs[2], c3)) : p2;
+  const dash = 'stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="4 3"';
+  s += seg([0, 0, 0], p1, dash) + seg(p1, p2, dash) + (has3 ? seg(p2, p, dash) : '');
+  vs.forEach((v, i) => { s += seg([0, 0, 0], v, `stroke="${COLORS[i]}" stroke-width="2.5" marker-end="url(#s3-arr${i})"`) + label(v, `v${'₁₂₃'[i]}`, COLORS[i]); });
+  const [px, py] = proj(p);
+  s += `<circle cx="${f(px)}" cy="${f(py)}" r="4.5" fill="var(--ink)"/>` + label(p, 'p', 'var(--ink)', 14);
+  svg.innerHTML = s;
+}
+
+const bar = document.getElementById('s3-presets');
+PRESETS.forEach((pr, i) => {
+  const b = document.createElement('button');
+  b.textContent = pr.name;
+  if (!i) b.className = 'on';
+  b.onclick = () => { cur = pr; [...bar.children].forEach(x => x.className = x === b ? 'on' : ''); render(); };
+  bar.appendChild(b);
+});
+document.getElementById('s3-c1').oninput = render;
+document.getElementById('s3-c2').oninput = render;
+document.getElementById('s3-c3').oninput = render;
+
+let drag = null;
+svg.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY]; svg.setPointerCapture(e.pointerId); });
+svg.addEventListener('pointermove', e => {
+  if (!drag) return;
+  yaw -= (e.clientX - drag[0]) * 0.01;
+  pitch = Math.max(-1.45, Math.min(1.45, pitch + (e.clientY - drag[1]) * 0.01));
+  drag = [e.clientX, e.clientY];
+  render();
+});
+svg.addEventListener('pointerup', () => drag = null);
+svg.addEventListener('pointercancel', () => drag = null);
+render();
+})();
+</script>
+{% endraw %}

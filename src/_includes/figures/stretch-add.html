@@ -1,0 +1,86 @@
+{% raw %}
+<style>
+.st-add{margin:1.5rem 0;font-family:var(--sans)}
+.st-add .sa-row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--muted)}
+.st-add svg{width:100%;height:auto;display:block;touch-action:none;user-select:none}
+.st-add svg text{font-family:var(--sans)}
+.st-add input[type=range]{width:120px;vertical-align:middle}
+</style>
+<figure class="diagram st-add">
+<div class="sa-row"><label>stretch c₁ <input id="sa-c1" type="range" min="-2.5" max="2.5" step="0.05" value="1.5"> <span id="sa-c1v"></span></label><label>stretch c₂ <input id="sa-c2" type="range" min="-2.5" max="2.5" step="0.05" value="1"> <span id="sa-c2v"></span></label></div>
+<svg id="sa-svg" viewBox="0 0 540 290" role="img" aria-label="Left: a point built by stretching two basis vectors and adding them tip to tail. Right: the same stretches and addition applied to where a linear map sends those basis vectors."></svg>
+</figure>
+
+<script>
+(function(){
+const S = 38, CY = 152, CXL = 135, CXR = 405, HALF = 125, BLUE = '#2F5D8A', AMB = '#6F5108';
+const $ = id => document.getElementById(id);
+const svg = $('sa-svg'), c1El = $('sa-c1'), c2El = $('sa-c2');
+let A = [[1.1, .35], [-.45, .9]], drag = null;
+const TL = ([x, y]) => [CXL + S*x, CY - S*y], TR = ([x, y]) => [CXR + S*x, CY - S*y];
+const add = (p, q) => [p[0]+q[0], p[1]+q[1]], mul = (p, s) => [p[0]*s, p[1]*s];
+const lin = ([x, y]) => add(mul(A[0], x), mul(A[1], y));
+const f = n => n.toFixed(1), fmt = p => `(${p[0].toFixed(2)}, ${p[1].toFixed(2)})`;
+const pline = (pts, T, attrs) => `<polyline fill="none" points="${pts.map(p => T(p).map(f).join(',')).join(' ')}" ${attrs}/>`;
+const arrow = (a, b, T, c, w = 2.4, dash = '') => pline([a, b], T, `stroke="${c}" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ''} marker-end="url(#sa-a-${c.slice(1)})"`);
+const lab = (p, T, txt, c, dx = 7, dy = -7) => { const [x, y] = T(p); return `<text x="${f(x+dx)}" y="${f(y+dy)}" font-size="12" font-weight="600" fill="${c}">${txt}</text>`; };
+const defs = '<defs>' + [BLUE, AMB].map(c => `<marker id="sa-a-${c.slice(1)}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join('') +
+  [['L', CXL], ['R', CXR]].map(([n, cx]) => `<clipPath id="sa-clip${n}"><rect x="${cx-HALF}" y="${CY-HALF}" width="${2*HALF}" height="${2*HALF}"/></clipPath>`).join('') + '</defs>';
+
+function grid(T, F) {
+  let s = '';
+  for (let i = -6; i <= 6; i++) {
+    const st = `stroke="var(--line)" stroke-width="${i ? .8 : 1.6}"`;
+    s += pline([F([i, -8]), F([i, 8])], T, st) + pline([F([-8, i]), F([8, i])], T, st);
+  }
+  return s;
+}
+function panel(T, b1, b2, c1, c2, names) {
+  const s1 = mul(b1, c1), p = add(s1, mul(b2, c2));
+  let s = `<g opacity=".45">${arrow([0, 0], s1, T, BLUE, 4)}${arrow(s1, p, T, AMB, 4)}</g>`;
+  s += arrow([0, 0], b1, T, BLUE, 2) + arrow([0, 0], b2, T, AMB, 2) + lab(b1, T, names[0], BLUE, 4, 18) + lab(b2, T, names[1], AMB, -12 - 7*names[1].length, 4);
+  const [px, py] = T(p);
+  s += `<circle cx="${f(px)}" cy="${f(py)}" r="5" fill="var(--ink)"/>` + lab(p, T, names[2], 'var(--ink)');
+  return [s, p];
+}
+function render() {
+  const c1 = +c1El.value, c2 = +c2El.value;
+  $('sa-c1v').textContent = c1.toFixed(2);
+  $('sa-c2v').textContent = c2.toFixed(2);
+  const [L, p] = panel(TL, [1, 0], [0, 1], c1, c2, ['e₁', 'e₂', 'x']);
+  const [R, fp] = panel(TR, A[0], A[1], c1, c2, ['f(e₁)', 'f(e₂)', 'f(x)']);
+  let handles = '';
+  for (const q of A) { const [x, y] = TR(q); handles += `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="transparent" stroke="var(--muted)" stroke-dasharray="2 2"/>`; }
+  const frame = cx => `<rect x="${cx-HALF}" y="${CY-HALF}" width="${2*HALF}" height="${2*HALF}" fill="var(--panel)" stroke="var(--line-soft)"/>`;
+  svg.innerHTML = defs + frame(CXL) + frame(CXR) +
+    `<text x="${CXL}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Input space</text>` +
+    `<text x="${CXR}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Output space</text>` +
+    `<text x="270" y="${CY+4}" text-anchor="middle" font-size="18" fill="var(--muted)">→</text>` +
+    `<g clip-path="url(#sa-clipL)">${grid(TL, q => q)}${L}</g><g clip-path="url(#sa-clipR)">${grid(TR, lin)}${R}${handles}</g>`;
+}
+
+function toSvg(e) {
+  const p = svg.createSVGPoint();
+  p.x = e.clientX; p.y = e.clientY;
+  return p.matrixTransform(svg.getScreenCTM().inverse());
+}
+const clamp = x => Math.max(-3, Math.min(3, x));
+svg.addEventListener('pointerdown', e => {
+  const r = toSvg(e);
+  A.forEach((q, i) => { const [x, y] = TR(q); if (Math.hypot(x - r.x, y - r.y) < 16) drag = i; });
+  if (drag === null && Math.abs(r.x - CXL) < HALF && Math.abs(r.y - CY) < HALF) drag = 'x';
+  if (drag !== null) { svg.setPointerCapture(e.pointerId); move(r); }
+});
+function move(r) {
+  if (drag === 'x') { c1El.value = clamp((r.x - CXL) / S).toFixed(2); c2El.value = clamp((CY - r.y) / S).toFixed(2); }
+  else A[drag] = [clamp((r.x - CXR) / S), clamp((CY - r.y) / S)];
+  render();
+}
+svg.addEventListener('pointermove', e => { if (drag !== null) move(toSvg(e)); });
+svg.addEventListener('pointerup', () => drag = null);
+svg.addEventListener('pointercancel', () => drag = null);
+c1El.oninput = render; c2El.oninput = render;
+render();
+})();
+</script>
+{% endraw %}
