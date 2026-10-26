@@ -49,6 +49,9 @@ function render() {
   $('sa-c2v').textContent = c2.toFixed(2);
   const [L, p] = panel(TL, [1, 0], [0, 1], c1, c2, ['e₁', 'e₂', 'x']);
   const [R, fp] = panel(TR, A[0], A[1], c1, c2, ['f(e₁)', 'f(e₂)', 'f(x)']);
+  const [gx, gy] = TL(fp);
+  const ghost = pline([p, fp], TL, 'stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"') +
+    `<circle cx="${f(gx)}" cy="${f(gy)}" r="5" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 2"/>` + lab(fp, TL, 'f(x)', 'var(--muted)');
   let handles = '';
   for (const q of A) { const [x, y] = TR(q); handles += `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="transparent" stroke="var(--muted)" stroke-dasharray="2 2"/>`; }
   const frame = cx => `<rect x="${cx-HALF}" y="${CY-HALF}" width="${2*HALF}" height="${2*HALF}" fill="var(--panel)" stroke="var(--line-soft)"/>`;
@@ -56,7 +59,7 @@ function render() {
     `<text x="${CXL}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Input space</text>` +
     `<text x="${CXR}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Output space</text>` +
     `<text x="270" y="${CY+4}" text-anchor="middle" font-size="18" fill="var(--muted)">→</text>` +
-    `<g clip-path="url(#sa-clipL)">${grid(TL, q => q)}${L}</g><g clip-path="url(#sa-clipR)">${grid(TR, lin)}${R}${handles}</g>`;
+    `<g clip-path="url(#sa-clipL)">${grid(TL, q => q)}${ghost}${L}</g><g clip-path="url(#sa-clipR)">${grid(TR, lin)}${R}${handles}</g>`;
 }
 
 function toSvg(e) {

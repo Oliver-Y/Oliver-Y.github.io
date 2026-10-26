@@ -4,7 +4,6 @@
 <svg class="lt-svg" viewBox="0 0 540 290" role="img" aria-label="Two panels: an input grid with draggable vectors, and the same grid after a chosen map, with the additivity or homogeneity test drawn on top."></svg>
 <div class="lt-row" style="margin-top:6px"><label><span class="lt-klabel">strength</span> <input class="lt-k" type="range" min="0" max="1" step="0.02"></label><label class="lt-awrap">a <input class="lt-a" type="range" min="-2" max="2" step="0.05" value="1.6"> <span class="lt-av"></span></label></div>
 <div class="lt-read"></div>
-<figcaption>{{ ltCaption or 'Drag the vectors on the left.' }} Hollow circle = what linearity predicts, F(v) + F(w) or a·F(v); filled circle = what F actually does, F(v+w) or F(a·v). A red dash means the two disagree.</figcaption>
 </figure>
 {% raw %}
 <style>
@@ -15,7 +14,7 @@
 .lin-tests svg{width:100%;height:auto;display:block;touch-action:none;user-select:none}
 .lin-tests svg text{font-family:var(--sans)}
 .lin-tests input[type=range]{width:120px;vertical-align:middle}
-.lin-tests .lt-read{margin-top:4px;font-size:13px;color:var(--muted);min-height:3.2em}
+.lin-tests .lt-read{margin-top:4px;font-size:13px;color:var(--muted);min-height:1.6em}
 .lin-tests .lt-read b{color:var(--ink)}
 .lin-tests .lt-bad{color:#9B2C1F;font-weight:600}
 </style>
@@ -23,18 +22,18 @@
 (function(){
 if (window.__linTestsInit) { window.__linTestsInit(); return; }
 const MAPS = {
-  linear: {name: 'Linear (shear)', k: .6, klabel: 'shear', F: (x, y, k) => [x + k*y, y],
+  linear: {name: 'Linear (shear)', k: .6, klabel: 'shear', eq: k => `F(x, y) = (x + ${k.toFixed(2)}y, y)`, F: (x, y, k) => [x + k*y, y],
     note: 'Both tests pass for every v, w and a. Gridlines stay straight, parallel and evenly spaced, and the origin stays put.'},
-  homog: {name: 'Homogeneous only (twist)', k: .35, klabel: 'twist', F: (x, y, k) => {
+  homog: {name: 'Homogeneous only (direction stretch)', k: 1, klabel: 'stretch', eq: k => `F(v) = (1 + ${k.toFixed(2)}·cos²θ)·v`, F: (x, y, k) => {
       const r2 = x*x + y*y;
       if (r2 < 1e-12) return [0, 0];
-      const tx = (x*x*x - 3*x*y*y) / r2, ty = (3*x*x*y - y*y*y) / r2;
-      return [(1-k)*x + k*tx, (1-k)*y + k*ty];
+      const s = 1 + k * x*x / r2;
+      return [s*x, s*y];
     },
-    note: 'F(z) = z³/|z|², blended with the identity by "twist". Every line through the origin maps to a line through the origin with even spacing, so homogeneity always passes. But the rest of the grid bends, and F(v+w) misses F(v) + F(w).'},
-  bend: {name: 'Neither: bend', k: 1, klabel: 'bend', F: (x, y, k) => [x, y + .25*k*x*x],
+    note: ''},
+  bend: {name: 'Neither: bend', k: 1, klabel: 'bend', eq: k => `F(x, y) = (x, y + ${(.25*k).toFixed(2)}x²)`, F: (x, y, k) => [x, y + .25*k*x*x],
     note: 'F(x, y) = (x, y + x²/4). Gridlines curve, and both tests fail: doubling v quadruples the bend instead of doubling it.'},
-  shift: {name: 'Neither: shift', k: 1, klabel: 'shift', F: (x, y, k) => [x + .6*k, y + .4*k],
+  shift: {name: 'Neither: shift', k: 1, klabel: 'shift', eq: k => `F(p) = p + (${(.6*k).toFixed(2)}, ${(.4*k).toFixed(2)})`, F: (x, y, k) => [x + .6*k, y + .4*k],
     note: 'F(p) = p + b. The grid stays straight, parallel and evenly spaced, just moved. But F(0) ≠ 0, so both tests fail: F(v) + F(w) counts the shift twice. Straight is not the same as linear.'},
 };
 const TESTS = {add: 'Additivity', hom: 'Homogeneity'};
@@ -59,6 +58,8 @@ function init(root) {
   const pline = (pts, T, attrs) => `<polyline fill="none" points="${pts.map(p => T(p).map(f).join(',')).join(' ')}" ${attrs}/>`;
   const seg = (a, b, T, attrs) => pline([a, b], T, attrs);
   const arrow = (a, b, T, c) => seg(a, b, T, `stroke="${c}" stroke-width="2.2" marker-end="url(#${id}a-${c.slice(1)})"`);
+  const ghost = (from, to, txt) => seg(from, to, TL, 'stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"') +
+    (([x, y]) => `<circle cx="${f(x)}" cy="${f(y)}" r="4.5" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 2"/>`)(TL(to)) + lab(to, TL, txt, 'var(--muted)');
   const pt = (p, T, c, hollow, r = 4.5) => { const [x, y] = T(p); return `<circle cx="${f(x)}" cy="${f(y)}" r="${r}" fill="${hollow ? 'var(--ground)' : c}" stroke="${c}" stroke-width="${r > 3 ? 2 : 1.2}"/>`; };
   const lab = (p, T, txt, c, dx = 7, dy = -7, anchor = 'start') => {
     const [x, y] = T(p);
@@ -85,6 +86,7 @@ function init(root) {
     if (test === 'add') {
       const s = addv(v, w), Fv = F(v), Fw = F(w), Fs = F(s), pred = addv(Fv, Fw), d = dist(Fs, pred);
       L += seg(v, s, TL, 'stroke="var(--muted)" stroke-dasharray="4 3"') + seg(w, s, TL, 'stroke="var(--muted)" stroke-dasharray="4 3"');
+      L += ghost(s, Fs, 'F(v+w)');
       L += arrow([0, 0], v, TL, BLUE) + arrow([0, 0], w, TL, AMB) + pt(s, TL, 'var(--ink)') + lab(v, TL, 'v', BLUE) + lab(w, TL, 'w', AMB) + lab(s, TL, 'v+w', 'var(--ink)');
       R += seg(Fv, pred, TR, 'stroke="var(--muted)" stroke-dasharray="4 3"') + seg(Fw, pred, TR, 'stroke="var(--muted)" stroke-dasharray="4 3"');
       R += arrow([0, 0], Fv, TR, BLUE) + arrow([0, 0], Fw, TR, AMB) + lab(Fv, TR, 'F(v)', BLUE) + lab(Fw, TR, 'F(w)', AMB);
@@ -96,6 +98,7 @@ function init(root) {
       const ray = Array.from({length: 121}, (_, i) => mul(v, (-6 + 12*i/120) / n));
       const ticks = [-3, -2, -1, 1, 2, 3].map(t => mul(v, t));
       L += pline(ray, TL, 'stroke="var(--muted)" stroke-dasharray="4 3"') + ticks.map(p => pt(p, TL, 'var(--muted)', true, 2.5)).join('');
+      L += ghost(av, Fav, 'F(a·v)');
       L += arrow([0, 0], v, TL, BLUE) + pt(av, TL, 'var(--ink)') + lab(v, TL, 'v', BLUE) + lab(av, TL, 'a·v', 'var(--ink)', 7, 14);
       R += pline(ray.map(F), TR, 'stroke="var(--muted)" stroke-dasharray="4 3"') + ticks.map(p => pt(F(p), TR, 'var(--muted)', true, 2.5)).join('');
       R += arrow([0, 0], Fv, TR, BLUE) + lab(Fv, TR, 'F(v)', BLUE);
@@ -109,11 +112,11 @@ function init(root) {
     const origin = T => { const [x, y] = T([0, 0]); return `<circle cx="${x}" cy="${y}" r="2.5" fill="var(--ink)"/>`; };
     svg.innerHTML = defs + frame(CXL) + frame(CXR) +
       `<text x="${CXL}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Input</text>` +
-      `<text x="${CXR}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">Output: F(input)</text>` +
+      `<text x="${CXR}" y="18" text-anchor="middle" font-size="13" fill="var(--ink)">${map.eq(+kEl.value)}</text>` +
       `<text x="270" y="${CY+4}" text-anchor="middle" font-size="18" fill="var(--muted)">→</text>` +
       `<g clip-path="url(#${id}clipL)">${grid(TL, false)}${origin(TL)}${L}</g>` +
       `<g clip-path="url(#${id}clipR)">${grid(TR, true)}${origin(TR)}${R}</g>`;
-    q('.lt-read').innerHTML = read + '<br>' + map.note;
+    q('.lt-read').innerHTML = read;
     q('.lt-awrap').style.display = test === 'hom' ? '' : 'none';
   }
 
